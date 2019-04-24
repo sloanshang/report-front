@@ -1,0 +1,85 @@
+<template>
+  <div style="background-color:#fff;">
+    <el-select v-model="value6" placeholder="请选择">
+      <el-option style="width: auto" :disabled="true" :value="null">
+        <span style="float: left;font-weight: bold">周次&nbsp;&nbsp;</span>
+        <span style="float: left; color: #8492a6; font-size: 13px; font-weight: bold"> &nbsp;开始日期&nbsp;&nbsp;</span>
+        <span style="float: right; color: #8492a6; font-size: 13px; font-weight: bold"> 截止日期&nbsp;</span>
+      </el-option>
+      <el-option v-for="item in res" :key="item.mateGroup" :label="item.mateGroup" value="item.weekEndDate">
+        <span style="float: left; color: #8492a6; font-size: 13px">{{ item.mateGroup }}&nbsp;&nbsp;</span>
+        <span style="float: left; color: #8492a6; font-size: 13px"> {{ item.weekStartDate }} &nbsp;&nbsp;</span>
+        <span style="float: right">{{ item.weekEndDate }}</span>
+      </el-option>
+    </el-select>
+  </div>
+
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import G2 from 'g2'
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        res: [],
+        value6: ''
+      }
+    },
+    created: function () {
+      var _self = this
+      _self.getWeekYearly()
+    },
+    methods: {
+      getWeekYearly () {
+        var _self = this
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/getWeekYearly',
+          type: 'GET',
+          //  contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            console.log(res)
+            _self.groupList = res
+          },
+          getGroup (item) {
+            var _self = this
+            _self.$emit('getGroup', item)
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      },
+      drawChart: function (datas) {
+        this.chart && this.chart.destroy()
+        this.chart = new G2.Chart({
+          id: 'abc',
+          forceFit: true, // 根据容器的宽度自适应
+          height: 250
+        })
+        this.chart.source(datas, {
+          litno: {
+            'alias': 'x日期',
+            type: 'cat',
+            'range': [0, 1]
+          },
+          'count_data': {
+            alias: 'y轴是'
+          }
+        })
+        this.chart.interval().position('litno*count_data').color('#eee')
+          .shape('rect')
+          .label('count_data', {offset: 20, label: {fill: '#000'}})
+        this.chart.render()
+      }
+    }
+  }
+</script>
+
+<style>
+
+</style>

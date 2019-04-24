@@ -1,0 +1,209 @@
+<template>
+  <div class="row" style="padding-top: 55px;background-color:#fff;">
+    <form class="form" style="overflow: hidden">
+      <div v-show="!up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">管理农场: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <!--查询的日期范围-->
+        <div class="form-group col-xs-12 col-sm-6" v-show="device=='M'">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">查询日期: </div>
+            <div class="form-control" style="padding: 0;">
+              <dtre001  style="padding: 0;"></dtre001>
+            </div>
+          </div>
+        </div>
+        <!--pc端查询日期-->
+        <div class="form-group col-xs-12 col-sm-6" v-show="device=='PC'">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">查询日期: </div>
+            <div class="form-control" style="padding: 0;border: none;">
+              <dtre001 :date="selectDate"  style="float:left; padding-right:2px" v-on:changeDate="doChangeDate"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">查询</button>&nbsp;
+          <button type="button" class="btn btn-primary">导出excel</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" v-show="!up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" v-show="up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-if="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-if="tableFlag" style="padding: 0 25px;">
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr v-if="tableFlag">
+          <th>胎次</th>
+          <th>数量</th>
+          <th>百分比</th>
+          <th>标准</th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr v-for="data in datas">
+          <td>{{data.litno}}</td>
+          <td>{{data.count_data}}</td>
+          <td>{{data.percent_rate}}</td>
+          <td>{{data.std}}</td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+          <tr v-for="data in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> 胎次 </span>
+                <span class="value"> {{data.litno}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 数量 </span>
+                <span class="value"> {{data['count_data']}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 百分比 </span>
+                <span class="value">{{data.percent_rate}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 标准 </span>
+                <span class="value">  {{data.std}}  </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="container" style="width:100%;margin:20px 0px 60px 0px"></div>
+  </div>
+
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import G2 from 'g2'
+  import {formatDate} from '@/components/utils/date'
+  import vueLoading from 'vue-loading-template'
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-Report13',
+    components: {
+      vueLoading,
+      Dtre001,
+      Dtre002
+    },
+    data () {
+      return {
+        up: false,
+        datas: [],
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        selectDate: '',
+        chartData: []
+      }
+    },
+    methods: {
+      down () {
+        this.up = !this.up
+      },
+      drawChart: function (datas) {
+        this.chart && this.chart.destroy()
+        this.chart = new G2.Chart({
+          id: 'container',
+          forceFit: true, // 根据容器的宽度自适应
+          height: 250
+        })
+        this.chart.source(datas, {
+          litno: {
+            'alias': '胎次',
+            type: 'cat'
+          },
+          count_data: {
+            alias: '母猪数量'
+          }
+        })
+        this.chart.interval().position('litno*count_data').color('#03b8ff')
+          .shape('rect')
+          .label('count_data', {offset: 10, label: {fill: '#000'}})
+        this.chart.animate(false)
+        this.chart.render()
+      },
+      doChangeDate (d) {
+        var _self = this
+        _self.selectDate = d
+        _self.selectDate = formatDate(this.selectDate, 'yyyy-MM-dd')
+      },
+      doSearch () {
+        var _self = this
+        _self.loadFlag = true
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report13',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'startDate': _self.selectDate},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            for (var i = 0; i < res.length; i++) {
+              if (res[i].isMerg !== '1') {
+                _self.chartData.push({
+                  litno: res[i].litno,
+                  count_data: res[i].count_data
+                })
+              }
+              console.log(_self.chartData)
+              _self.drawChart(_self.chartData)
+            }
+            _self.loadFlag = false
+            _self.farmName = res[0].farm_name_loc
+            _self.tableFlag = true
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+</style>

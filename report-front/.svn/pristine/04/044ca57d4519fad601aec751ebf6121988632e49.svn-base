@@ -1,0 +1,305 @@
+<template>
+  <div class="row" id="pdfDom" style="padding: 55px 25px;;background-color: #fff;">
+    <form class="form" style="overflow: hidden">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.farm')}}: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.breedGroup')}}: </div>
+            <div class="form-control" style="width: 45%;padding: 0;height: auto;">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getStartGroup"></weekse001>
+            </div>
+            <span class="form-control" style="padding: 5px 0;width: 10%;text-align: center;border: none;">{{$t('swineReport.to')}}</span>
+            <div class="form-control" style="width: 45%;padding: 0;height: auto">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getEndGroup"></weekse001>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('swineReport.startDate')}}： </div>
+            <div class="form-control" style="padding: 0;height: auto">
+              <el-input  v-model="startDate" :disabled="true"> </el-input>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('swineReport.endDate')}}： </div>
+            <div class="form-control" style="padding: 0;height: auto">
+              <el-input  v-model="endDate" :disabled="true"> </el-input>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="openWarning">{{$t('swineReport.search')}}</button>&nbsp;
+          <a href="#" id="dlink"><button type="button" class="btn btn-primary" @click="getExcel">{{$t('swineReport.export')}} Excel</button>&nbsp;</a>
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('swineReport.export')}} PDF</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-show="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-if="tableFlag && datas.length !== 0" style="position: relative;overflow-x: auto">
+      <table v-if="datas.length !==0 && fixedHeader" id="fHeader" class="table table-bordered">
+        <thead>
+        <tr>
+          <td>{{$t('swineReport.branch')}}</td>
+          <td  v-for="(value, key, $index) in datas[0]"   v-if="key.endsWith('ID') ">
+            <span>{{value}}</span>
+            <div>
+              {{(language === 'en')===true? datas[0][key.replace('ID','NameEng')] :datas[0][key.replace('ID','NameLoc')] }}
+            </div>
+          </td>
+        </tr>
+        </thead>
+      </table>
+      <h4 style="text-align: center">{{$t('message.titleSwineReport08')}}</h4>
+      <div style="padding-bottom: 4px"><el-tag size="small ">{{$t('swineReport.farm')}}:{{farmName}}&nbsp;{{tableTh.farm_org_name_loc}}</el-tag><el-tag size="small " style="margin-right: 5px;padding: 0 15px;">{{$t('swineReport.breedGroup')}}: {{startGroup}}-{{endGroup}}</el-tag><el-tag size="small ">{{$t('swineReport.printTime')}}:{{tableTh.printReportTime}}</el-tag></div>
+      <table v-show="device=='PC'" id="tableContent" class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr>
+          <td style="align:center;">{{$t('swineReport.branch')}}</td>
+          <td  v-for="(value, key, $index) in datas[0]"   v-if="key.endsWith('ID') ">
+            <div>{{value}}</div>
+            <div>
+              {{(language === 'en')===true? datas[0][key.replace('ID','NameEng')] :datas[0][key.replace('ID','NameLoc')] }}
+            </div>
+          </td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(value, index) in datas" valign="middle">
+          <td>
+            <div>
+              {{ (value.sub_category_name_loc === 'spaceline') === true ? '&nbsp;&nbsp;' : (language === 'en')===true?value.sub_category_name_eng: value.sub_category_name_loc}}</div>
+          </td>
+
+          <td  v-for="(valueRow, keys, $index) in datas[index]"  v-if=" filtered.indexOf(keys.replace('Val','ID')) >= 0 & keys.endsWith('Val') " valign="middle">
+            <div  v-if ="false">
+              {{(value.sub_category_name_loc === 'spaceline') === true ? ' ' :keys}}
+            </div>
+            <div>
+              {{ (value.sub_category_name_loc === 'spaceline') === true ? ' ' :valueRow}}
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <table v-show="device=='M'" class="table table-bordered table-hover table-striped">
+        <tbody>
+        <tr v-for="(value, key, index) in datas[0]"   v-if="key.endsWith('ID') ">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.name')}}</span>
+                <span class="value">{{ (language === 'en')===true? datas[0][key.replace('ID','NameEng')]: datas[0][key.replace('ID','NameLoc')] }}</span>
+              </div>
+              <div class="card-view" v-for="(valueRow, $index) in datas"  >
+                <span class="title">   {{(valueRow.sub_category_name_loc === 'spaceline') === true ? ' ' :(language === 'en')===true? valueRow.sub_category_name_eng:valueRow.sub_category_name_loc }}</span>
+                <span>{{ (valueRow.sub_category_name_loc === 'spaceline') === true ? ' ' : datas[$index][key.replace('ID','Val')] }}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <p v-show="tableFlag && datas.length == 0" style="text-align: center;">{{$t('swineReport.noData')}}</p>
+  </div>
+</template>
+
+<script>
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  import Weekse001 from '@/components/cm/weekse001'
+  import jQuery from 'jquery'
+  import vueLoading from 'vue-loading-template'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device', 'language'],
+    name: 'swine-report08',
+    components: {
+      Dtre001,
+      Dtre002,
+      Weekse001,
+      vueLoading
+    },
+    data () {
+      return {
+        top: 1300 + 'px',
+        fixedHeader: false,
+        tag: {},
+        up: true,
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        datas: [],
+        startGroup: '',
+        endGroup: '',
+        groupList: '',
+        startDate: '',
+        endDate: '',
+        htmlTitle: this.$t('message.titleSwineReport08'),
+        tableTh: ''
+      }
+    },
+    computed: {
+      filtered () {
+        return Object.keys(this.datas[0]).filter(function (x) {
+          console.log(x)
+          return x.endsWith('ID')
+        })
+      }
+    },
+    created: function () {
+      //   var _self = this
+      // _self.getWeekYearly()
+      // this.device = 'M'
+    },
+    mounted () {
+      this.headerMonitor()
+    },
+    methods: {
+      getExcel () {
+        var excelTitle = '<h1 style="text-align: center">' + '</h1>'
+        excelTitle += '<h2 style="text-align: center">' + this.htmlTitle + '</h2>'
+        excelTitle += '<span>' + this.$t('swineReport.queryDate') + ':' + this.startDate + this.$t('swineReport.to') + this.endDate + '</span>'
+        this.tableToExcel2(excelTitle, 'tableContent')
+      },
+      down () {
+        this.up = !this.up
+      },
+      getStartGroup (d) {
+        this.startGroup = d.mateGroup
+        this.startDate = d.weekStartDate
+      },
+      getEndGroup (d) {
+        this.endGroup = d.mateGroup
+        this.endDate = d.weekEndDate
+      },
+      openWarning () {
+        var _self = this
+        if (_self.startDate > _self.endDate) {
+          _self.$notify.error({
+            title: '警告',
+            message: '选择的查询区段有误,请核实！',
+            type: 'warning',
+            position: 'top-right'
+          })
+        } else if (_self.startDate === '' || _self.endDate === '') {
+          _self.$notify.error({
+            title: '警告',
+            message: '配种组不可以为空！',
+            type: 'warning',
+            position: 'top-right'
+          })
+        } else {
+          _self.doSearch()
+        }
+      },
+      doSearch () {
+        var _self = this
+        _self.datas = ''
+        _self.tableFlag = false
+        _self.loadFlag = true
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report8',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'startDate': _self.startDate, 'endDate': _self.endDate},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            _self.tableTh = res[0]
+            _self.loadFlag = false
+            _self.tableFlag = true
+            _self.$nextTick(function () {
+              _self.tag.hHeight = jQuery('#tableContent').offset().top
+            })
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      },
+      headerMonitor () {
+        var self = this
+//        var hHeight = jQuery('#sTable').offset().top
+        jQuery(document).scroll(function () {
+          // 当滚动条达到偏移值的时候，出现固定表头
+          if (jQuery(this).scrollTop() >= self.tag.hHeight - 50) {
+            self.fixedHeader = true
+            let mytop = jQuery(this).scrollTop() - 156
+            jQuery('#fHeader').css('top', mytop + 'px')
+          } else {
+            self.fixedHeader = false
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /*Alternating background colors*/
+  /*.table tr:nth-child(even) {*/
+  /*background: #eee*/
+  /*}*/
+  /*.table tr:nth-child(odd) {*/
+  /*background: #FFF*/
+  /*}*/
+  #fHeader{
+    min-width: 900px;
+    position: absolute;
+    top: 56px;
+    left: 0px;
+    z-index:12;
+    background-color: #fff;
+  }
+  #tableContent{
+    min-width: 900px;
+  }
+  #fHeader tr td:nth-child(1),#tableContent tr td:nth-child(1){
+    width: 10%;
+    min-width: 120px;
+  }
+  #fHeader tr td:not(:first-child),#tableContent tr td:not(:first-child){
+    width: 8%;
+    min-width: 75px;
+  }
+</style>

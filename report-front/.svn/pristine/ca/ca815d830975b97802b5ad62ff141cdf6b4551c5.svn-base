@@ -1,0 +1,181 @@
+<template>
+  <!-- 二级菜单页面 -->
+  <div class="content-wrapper">
+    <section class="content">
+      <div class="row">
+        <div class="col-sm-6 col-md-3" style="height: 220px" v-for="menu in menus">
+          <div class="box box-info box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{menu.group}}</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-footer no-padding">
+              <ul class="nav nav-pills nav-stacked" style="height:165px;">
+                <li v-for="item in menu.links"><router-link :to="item.link"><i class="fa fa-circle-o " :class="{'text-yellow': item.link != '#'}"></i>{{item.title}}</router-link></li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+  import jQuery from 'jquery'
+
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        menus: [
+          {
+            group: 'menu.feed.title',
+            links: [
+              {
+                title: 'menu.feed.expend',
+                link: '/fecsma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'fecsma001'
+              },
+              {
+                title: 'menu.feed.purchase',
+                link: '/fepcma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'fepcma001'
+              },
+              {
+                title: 'menu.feed.sale',
+                link: '/fesema001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'fesema001'
+              }
+            ]
+          },
+          {
+            group: 'menu.semen.title',
+            links: [
+              {
+                title: 'menu.semen.expend',
+                link: '/smcsma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'smcsma001'
+              },
+              {
+                title: 'menu.semen.purchase',
+                link: '/smpcma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'smpcma001'
+              },
+              {
+                title: 'menu.semen.sale',
+                link: '/smsema001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'smsema001'
+              },
+              {
+                title: 'menu.semen.produce',
+                link: '/smpdma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'smpdma001'
+              }
+            ]
+          },
+          {
+            group: 'menu.medicine.title',
+            links: [
+              {
+                title: 'menu.medicine.expend',
+                link: '/mvcsst001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'mvcsst001'
+              },
+              {
+                title: 'menu.medicine.purchase',
+                link: '/mvpcst001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'mvpcst001'
+              },
+              {
+                title: 'menu.medicine.sale',
+                link: '/mvsest001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'mvsest001'
+              }
+            ]
+          },
+          {
+            group: 'menu.sow.title',
+            links: [
+              {
+                title: 'menu.sow.breed',
+                link: '/bmmama001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'bmmama001'
+              },
+              {
+                title: 'menu.sow.check',
+                link: '/bmabma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'bmabma001'
+              },
+              {
+                title: 'menu.sow.farrow',
+                link: '/bmfama001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'bmfama001'
+              },
+              {
+                title: 'menu.sow.wean',
+                link: '/bmwema001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'bmfama001'
+              }
+            ]
+          },
+          {
+            group: 'menu.boar.title',
+            links: [
+              {
+                title: 'menu.boar.transfer',
+                link: '/botrma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'botrma001'
+              },
+              {
+                title: 'menu.boar.sell',
+                link: '/bosema001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'bosema001'
+              },
+              {
+                title: 'menu.boar.die',
+                link: '/boddma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'boddma001'
+              }
+            ]
+          },
+          {
+            group: 'menu.grower.title',
+            links: [
+              {
+                title: 'menu.grower.purchase',
+                link: '/grpuma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'grpuma001'
+              },
+              {
+                title: 'menu.grower.transfer',
+                link: '/grmoma001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'grmoma001'
+              },
+              {
+                title: 'menu.grower.sell',
+                link: '/grsama001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'grsama001'
+              },
+              {
+                title: 'menu.grower.die',
+                link: '/grdema001/' + this.orgCode + '/' + this.farmOrg,
+                id: 'grdema001'
+              }
+            ]
+          }
+        ]
+      }
+    },
+    mounted () {
+     // jQuery.fn.boxWidget.call(jQuery('.box'))
+    }
+  }
+</script>

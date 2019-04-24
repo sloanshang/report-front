@@ -1,0 +1,69 @@
+<template>
+  <div style="padding-top: 65px;background-color:#fff;">
+    <el-select v-model="value6" placeholder="请选择">
+      <el-option v-for="item in cities" :key="item.value" :label="item.label" :value="item.value">
+        <span style="float: left">{{ item.label }}</span>
+        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+      </el-option>
+    </el-select>
+  </div>
+
+</template>
+
+<script>
+  import G2 from 'g2'
+  export default {
+    data () {
+      return {
+        cities: [{
+          value: 'Beijing',
+          label: '北京'
+        }, {
+          value: 'Shanghai',
+          label: '上海'
+        }, {
+          value: 'Nanjing',
+          label: '南京'
+        }, {
+          value: 'Chengdu',
+          label: '成都'
+        }, {
+          value: 'Shenzhen',
+          label: '深圳'
+        }, {
+          value: 'Guangzhou',
+          label: '广州'
+        }],
+        value6: ''
+      }
+    },
+    methods: {
+      drawChart: function (datas) {
+        this.chart && this.chart.destroy()
+        this.chart = new G2.Chart({
+          id: 'abc',
+          forceFit: true, // 根据容器的宽度自适应
+          height: 250
+        })
+        this.chart.source(datas, {
+          litno: {
+            'alias': 'x日期',
+            type: 'cat',
+            'range': [0, 1]
+          },
+          'count_data': {
+            alias: 'y轴是'
+          }
+        })
+        this.chart.interval().position('litno*count_data').color('#eee')
+          .shape('rect')
+          .label('count_data', {offset: 20, label: {fill: '#000'}})
+        this.chart.render()
+      }
+    }
+  }
+</script>
+
+<style>
+
+</style>

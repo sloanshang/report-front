@@ -1,0 +1,117 @@
+<template>
+  <div class="content-wrapper" style="margin-left:0">
+    <section class="content">
+      <div class="row">
+        <!--给下面的div增加v-show="menu.isShow" 可以实现权限-->
+        <div class="col-sm-12 col-md-12"  v-for="menu in menus">
+          <div class="box box-info box-solid" style="margin-bottom: 70px">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{menu.group}}</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-footer no-padding">
+              <ul class="nav nav-pills nav-stacked">
+                <li v-for="item in menu.links">
+                  <!--给下面的div增加 v-show = "item.isAllow" 可以实现权限-->
+                  <router-link :to="item.link"  style="text-align: left;">
+                    <i class="fa fa-circle-o " :class="{'text-yellow': item.link != '#'}"></i>
+                    {{item.title}}
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        menus: [
+          {
+            group: '种猪报表',
+            links: [
+              {
+                title: '1.周性能概述表',
+                link: '/swineReport01/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '2.性能数据总表',
+                link: '/swineReport02/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '3.0胎母猪性能分析',
+                link: '/swineReport03/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '4.分娩分析',
+                link: '/swineReport04/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '5.分娩分析（未怀孕原因）',
+                link: '/swineReport05/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '6.重配天数分布图',
+                link: '/swineReport06/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '7.性能分析报表（按胎次分）',
+                link: '/swineReport07/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '8.技术人员生产数据统计表',
+                link: '/swineReport08/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '9.发情至第一次配种天数分布图',
+                link: '/swineReport09/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '10.不开发',
+                link: '/swineReport10/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '11.淘汰母猪分析表',
+                link: '/swineReport11/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '12.淘汰母猪胎次分布图',
+                link: '/swineReport12/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '13.胎次分布图',
+                link: '/swineReport13/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '14.配种预警',
+                link: '/swineReport14/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '15.分娩预警',
+                link: '/swineReport15/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '16.断奶预警',
+                link: '/swineReport16/' + this.orgCode + '/' + this.farmOrg
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+</script>
+

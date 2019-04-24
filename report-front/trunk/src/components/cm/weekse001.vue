@@ -1,0 +1,67 @@
+<template>
+    <el-select v-model="ite" :placeholder="$t('swineReport.select')" value-key="mateGroup">
+      <el-option style="width: auto" :disabled="true" :value="null">
+        <span style="width: 20%;text-align:center;float: left;font-weight: bold">{{$t('swineReport.weekNo')}}&nbsp;&nbsp;</span>
+        <span style="width: 40%;text-align:center;float: left; color: #8492a6; font-size: 13px; font-weight: bold"> &nbsp;{{$t('swineReport.startDate')}}&nbsp;&nbsp;</span>
+        <span style="width: 40%;text-align:center;float: right; color: #8492a6; font-size: 13px; font-weight: bold"> {{$t('swineReport.endDate')}}&nbsp;</span>
+      </el-option>
+      <el-option v-for="(item,index) in res" :key="index" :label="item.mateGroup" v-bind:value="item">
+        <span style="width: 20%;text-align:center;float: left; color: #8492a6; font-size: 13px">{{ item.mateGroup }}&nbsp;&nbsp;</span>
+        <span style="width: 40%;text-align:center;float: left; color: #8492a6; font-size: 13px"> {{ item.weekStartDate }} &nbsp;&nbsp;</span>
+        <span style="width: 40%;text-align:center;float: right">{{ item.weekEndDate }}</span>
+      </el-option>
+    </el-select>
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        res: [],
+        ite: '',
+        weekse: ''
+      }
+    },
+    created: function () {
+      var _self = this
+      _self.getWeekYearly()
+    },
+    watch: {
+      ite: function (val) {
+        this.weekse = val
+        console.log(this.weekse)
+        this.getL()
+      }
+    },
+    methods: {
+      getWeekYearly () {
+        var _self = this
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/getWeekYearly',
+          type: 'GET',
+          //  contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            _self.ite = res[0]
+            _self.res = res
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      },
+      getL: function () {
+        var _self = this
+        _self.$emit('getL', _self.weekse)
+      }
+    }
+  }
+</script>
+
+<style>
+
+</style>

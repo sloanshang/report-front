@@ -1,0 +1,981 @@
+<template>
+  <div class="row" id="pdfDom" style="padding-top: 55px;padding-bottom:55px;min-height: 660px;background-color:#fff;">
+    <form class="form" style="overflow: hidden;">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.farm')}}: </div>
+            <input class="form-control" readonly v-model="farmName">
+          </div>
+        </div>
+        <!--品种-->
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('swineReport.variety')}}: </div>
+            <div class="dropdown form-control" style="padding:0;z-index: 9;height: auto;">
+              <div class="dropdown-toggle col-xs-12 col-sm-12" id="breed" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="true" style="position:relative;left: 0;top: 0;height: 32px;line-height: 32px;cursor: pointer;overflow: hidden;">
+                <span class="textWords" v-show="totalBreeders.length === 0">请选择品种</span>
+                <div class="textWords" v-show="totalBreederName.length !== 0" style="">{{totalBreedersN.toString()}}</div>
+                <span class="glyphicon glyphicon-menu-down" style="position:absolute;right: 7px;top: 10px;z-index:5;color: #ddd;"></span>
+              </div>
+              <ul class="dropdown-menu col-xs-12 col-sm-12" aria-labelledby="breed" style="padding: 5px;border:1px solid #5DA0C7;border-radius:0;max-height: 240px;overflow-y: scroll">
+                <li class="breedLi"><input type="checkbox" v-model="checkAll">全选 <span>({{totalBreeders.length}})</span></li>
+                <li class="breedLi" v-for="(item,index) in breeds">
+                  <input type="checkbox" :value="item.ID" v-model="checked">
+                  <span>{{item.PRODUCTNAME}}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!--品种结束-->
+
+        <div class="form-group col-xs-12 col-sm-6" >
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.breedGroup')}}: </div>
+            <div class="form-control" style="width: 45%;padding: 0;height: auto;">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getStartGroup"></weekse001>
+            </div>
+            <span class="form-control" style="padding: 5px 0;width: 10%;text-align: center;border: none;">{{$t('swineReport.to')}}</span>
+            <div class="form-control" style="width: 45%; padding: 0;height:auto;">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getEndGroup"></weekse001>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6" >
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.gestation')}}: </div>
+            <div class="form-control" style="padding: 0;height: auto;">
+              <input class="form-control" style="border: none;" type="number" v-model="pregnantDay" min="1"/>
+            </div>
+            <div class="input-group-addon">{{$t('swineReport.day')}}</div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6" >
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.parity')}}:</div>
+            <div class="form-control col-xs-12 col-sm-12">
+              <div style="display:inline-flex;padding: 0 15px ;" >
+                <input type="radio" name="birth"  value="ALL" v-model="parity"> <span>{{$t('swineReport.all')}}</span>
+              </div>
+              <div style="display:inline-flex;padding: 0 15px;" >
+                <input type="radio" name="birth" style="padding-right: 40px;" value="FIRST" v-model="parity"> <span>{{$t('swineReport.parity0')}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6" >
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.state')}}: </div>
+            <div class="form-control col-xs-12 col-sm-12">
+              <div style="display:inline-flex;padding: 0 15px ;" >
+                <input type="radio" name="pregnant"  value="Y" v-model="pregnant"> <span>{{$t('swineReport.pregnant')}}</span>
+              </div>
+              <div style="display:inline-flex;padding: 0 15px;" >
+                <input type="radio" name="pregnant" style="padding-right: 40px;" value="N" v-model="pregnant"> <span>{{$t('swineReport.notPregnant')}}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="form-group col-xs-12 col-sm-12">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.rangeOfDays')}}: </div>
+            <div class="form-control" style="height: auto">
+              <div class="col-xs-4 col-sm-2 col-md-1 col-lg-1" style="padding: 0" v-for="(d, index) in dayArr">
+                <label class="laber-info">{{index+1}}:</label><input type="number" class="laber-input" min="0" v-model="d.day">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">{{$t('swineReport.search')}}</button>&nbsp;
+          <a href="#" id="dlink"><button type="button" class="btn btn-primary" @click="getExcel">{{$t('swineReport.export')}} Excel</button>&nbsp;</a>
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('swineReport.export')}} PDF</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-if="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-show="tableFlag && datas.length !== 0" style="padding: 0 25px;">
+      <div class="table-responsive">
+        <div style="padding-bottom: 4px">
+          <h3 style="text-align: center"> {{$t('message.titleSwineReport04')}}</h3>
+          <el-tag size="small ">{{$t('swineReport.breedGroup')}}:{{tag.mateGroup1}} - {{tag.mateGroup2}}</el-tag>
+          <el-tag size="small ">{{$t('swineReport.gestation')}}:{{tag.pregnantDay}}</el-tag>
+          <el-tag size="small ">{{$t('swineReport.parity')}}:{{tag.parity}}</el-tag>
+          <el-tag size="small ">{{$t('swineReport.state')}}:{{tag.pregnant=='Y'?$t('pregnant'):$t('pregnant')}}</el-tag>
+          <el-tag size="small ">{{$t('swineReport.printTime')}}:{{tag.dateNow}}</el-tag>
+        </div>
+        <table v-show="!parStatue" id="tableContent" class="table table-bordered table-hover table-striped">
+          <thead>
+          <tr>
+            <th rowspan="3">{{$t('swineReport.breedGroup')}} </th>
+            <th rowspan="3">{{$t('swineReport.mateingDays')}}</th>
+            <th rowspan="3">{{$t('swineReport.sow')}} </th>
+            <th rowspan="3">{{$t('swineReport.total')}} </th>
+            <th v-show="!parStatue" colspan="18" style="text-align: center;">{{$t('swineReport.report2TableTitle2')}}</th>
+            <th rowspan="3">{{$t('swineReport.farrow')}}</th>
+            <th rowspan="3">{{$t('swineReport.farrowR')}}</th>
+            <th rowspan="3">{{$t('swineReport.adjfarrowR')}}</th>
+            <th rowspan="3">{{$t('swineReport.notFarrow')}}</th>
+            <th rowspan="3">{{$t('swineReport.expectFarrowR')}}</th>
+            <th rowspan="3">{{$t('swineReport.expectFarrowD')}}</th>
+          </tr>
+          <tr>
+            <th v-for="(header, i) in headers1">{{Sheader[i] ? header : ''}}</th>
+          </tr>
+          <tr>
+            <th v-for="(header, i) in headers2">{{Sheader[i] ? header : ''}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <!--未怀孕 内容区域-->
+          <tr v-for="(data,index) in datas">
+            <td>{{data['mate_group']}}</td>
+            <td>{{data['week_start_date']}}-{{data['week_end_date']}}</td>
+            <td>{{data['sow']}}</td>
+            <td>{{summary[index]}}</td>
+            <td v-for="(d, i) in total.ShowTotalNum[index]">
+              {{(!d || (data['w' + (i*1+1)]*1 + data['wo' + (i*1+1)]*1)==0)?'':(data['w' + (i*1+1)]*1 + data['wo' + (i*1+1)]*1)}}
+            </td>
+            <td>{{farrow[index]==0?'':farrow[index]}}</td>
+            <td>
+              {{farrow[index]==0||data['sow']==0?'':(100*farrow[index]/data['sow']).toFixed(2) }}
+            </td>
+            <td>
+              {{farrow[index]==0 || data['sow']-data['culled_by_abort']==0 ? '' : (100*farrow[index]/(data['sow']-data['culled_by_abort'])).toFixed(2)}}
+            </td>
+
+            <td>{{(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+            +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+            +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+            +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+            +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1)==0?'':(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+            +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+            +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+            +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+            +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1)}}</td>
+
+            <td>
+              {{((data['sow']-(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+            +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+            +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+            +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+            +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1))*100/(data['sow']==0?1:data['sow'])).toFixed(2)}}
+            </td>
+
+            <td>{{data.exp1}}-{{data.exp2}}</td>
+          </tr>
+          <tr>
+            <td>
+            </td>
+            <td>{{$t('swineReport.total')}}</td>
+            <td>{{summary[summary.length-1]}}</td>
+            <td></td>
+            <td v-for="(d,i) in total.sumd">
+              {{isNaN(summary[summary.length-1]-d) || !Sheader[i]?' ':summary[summary.length-1]-d}}
+            </td>
+            <td>{{total.sumAmount19==0?'':total.sumAmount19}}</td>
+            <td>
+              {{(100*total.sumAmount19/summary[summary.length-1])==0 || (100*total.sumAmount19/summary[summary.length-1]).toFixed(2) == 'NaN'?'':(100*total.sumAmount19/summary[summary.length-1]).toFixed(2)}}
+            </td>
+            <td>
+              {{(100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort']))==0 || ((100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort'])).toFixed(2)) == 'NaN'?'':(100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort'])).toFixed(2)}}
+            </td>
+            <td> {{total.noPragnantNum == 0 ?'':total.noPragnantNum}}</td>
+            <td>
+              {{(100*(summary[summary.length-1]-total.noPragnantNum)/summary[summary.length-1]).toFixed(2) == 'NaN'?'':(100*(summary[summary.length-1]-total.noPragnantNum)/summary[summary.length-1]).toFixed(2)}}
+            </td>
+            <td></td>
+          </tr>
+          <!--没有怀孕的母猪-->
+          <tr>
+            <td></td>
+            <td style="white-space: nowrap">{{$t('swineReport.notPregnant')}} {{$t('swineReport.sow')}}：</td>
+            <td> </td>
+            <td> </td>
+            <td v-for="(s, i) in total.sum ">{{s==0 || !Sheader[i]?' ':s}}</td>
+            <td> </td>
+            <td> </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <!--未怀孕np-->
+          <tr>
+            <td></td>
+            <td>NP {{$t('swineReport.days')}}</td>
+            <td> </td>
+            <td> </td>
+            <td v-for="(d, i) in total.npDay">{{d==0 || !Sheader[i]?' ':d}}</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td></td>
+          </tr>
+          </tbody>
+        </table>
+        <table v-show="parStatue"  id="tableContent2" class="table table-bordered table-hover table-striped">
+          <thead>
+          <tr>
+            <th rowspan="3">{{$t('swineReport.breedGroup')}} </th>
+            <th rowspan="3">{{$t('swineReport.mateingDays')}}</th>
+            <th rowspan="3">{{$t('swineReport.sow')}} </th>
+            <th rowspan="3">{{$t('swineReport.total')}} </th>
+            <th v-show="parStatue" colspan="18" style="text-align: center;">{{$t('swineReport.report2TableTitle')}}</th>
+            <th rowspan="3">{{$t('swineReport.farrow')}}</th>
+            <th rowspan="3">{{$t('swineReport.farrowR')}}</th>
+            <th rowspan="3">{{$t('swineReport.adjfarrowR')}}</th>
+            <th rowspan="3">{{$t('swineReport.notFarrow')}}</th>
+            <th rowspan="3">{{$t('swineReport.expectFarrowR')}}</th>
+            <th rowspan="3">{{$t('swineReport.expectFarrowD')}}</th>
+          </tr>
+          <tr>
+            <th v-for="(header, i) in headers1">{{Sheader[i] ? header : ''}}</th>
+          </tr>
+          <tr>
+            <th v-for="(header, i) in headers2">{{Sheader[i] ? header : ''}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(data,index) in datas">
+            <td>{{data['mate_group']}}</td>
+            <td>{{data['week_start_date']}}-{{data['week_end_date']}}</td>
+            <td>{{data['sow']}}</td>
+            <td>{{summary[index]}}</td>
+            <td v-for="(d, i) in total.ShowTotalNum[index]">
+              {{((d || (data['sow'] - getSum(data, (i*1+1))) ==0) && Sheader[i])?(data['sow'] - getSum(data, (i*1+1))):''}}
+            </td>
+
+            <td>{{farrow[index]==0?'':farrow[index]}}</td>
+            <td>
+              {{farrow[index]==0||data['sow']==0?'':(100*farrow[index]/data['sow']).toFixed(2) }}
+            </td>
+            <td>
+              {{farrow[index]==0 || data['sow']-data['culled_by_abort']==0 ? '' : (100*farrow[index]/(data['sow']-data['culled_by_abort'])).toFixed(2)}}
+            </td>
+            <td>
+              {{(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+            +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+            +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+            +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+            +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1)==0?'':(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+            +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+            +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+            +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+            +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1)}}
+            </td>
+            <td>{{((data['sow']-(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+            +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+            +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+            +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+            +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1))*100/(data['sow']==0?1:data['sow'])).toFixed(2)}}</td>
+
+            <td>{{data.exp1}}-{{data.exp2}}</td>
+          </tr>
+          <!--未怀孕汇总-->
+          <tr>
+            <td>
+            </td>
+            <td>{{$t('swineReport.total')}}</td>
+            <td>{{summary[summary.length-1]}}</td>
+            <td></td>
+            <td v-for="(d,i) in total.sumd">
+              {{isNaN(summary[summary.length-1]-d) || !Sheader[i]?' ':summary[summary.length-1]-d}}
+            </td>
+            <td>{{total.sumAmount19==0?'':total.sumAmount19}}</td>
+            <td>
+              {{(100*total.sumAmount19/summary[summary.length-1])==0 || (100*total.sumAmount19/summary[summary.length-1]).toFixed(2) == 'NaN'?'':(100*total.sumAmount19/summary[summary.length-1]).toFixed(2)}}
+            </td>
+            <td>
+              {{(100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort']))==0 || ((100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort'])).toFixed(2)) == 'NaN'?'':(100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort'])).toFixed(2)}}
+            </td>
+            <td> {{total.noPragnantNum == 0 ?'':total.noPragnantNum}}</td>
+            <td>
+              {{(100*(summary[summary.length-1]-total.noPragnantNum)/summary[summary.length-1]).toFixed(2) == 'NaN'?'':(100*(summary[summary.length-1]-total.noPragnantNum)/summary[summary.length-1]).toFixed(2)}}
+            </td>
+            <td></td>
+          </tr>
+          <!--怀孕的母猪-->
+          <tr>
+            <td></td>
+            <td>{{$t('swineReport.pregnant')}} {{$t('swineReport.sow')}}</td>
+            <td> </td>
+            <td> </td>
+            <td v-for="(s, i) in total.sum ">{{s==0 || !Sheader[i]?' ':s}}</td>
+            <td> </td>
+            <td> </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <!--怀孕np-->
+          <tr>
+            <td></td>
+            <td>NP {{$t('swineReport.days')}}</td>
+            <td> </td>
+            <td> </td>
+            <td v-for="(d, i) in total.npDay">{{d==0 || !Sheader[i]?' ':d}}</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td></td>
+          </tr>
+          </tbody>
+          <tbody v-if="false">
+          <tr v-show="!parStatue && datas" v-for="(data,index) in datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.breedGroup')}}</span>
+                  <span class="value imval"> {{data['mate_group']}} </span>
+                </div>
+                <div class="card-view">
+                  <span class="title"> {{$t('swineReport.mateingDays')}} </span>
+                  <span class="value imval"> {{data['week_start_date']}}-{{data['week_end_date']}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title"> {{$t('swineReport.sow')}} </span>
+                  <span class="value imval"> {{data['sow']}} </span>
+                </div>
+                <div class="card-view">
+                  <span class="title"> {{$t('swineReport.total')}} </span>
+                  <span class="value imval">{{summary[index]}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.report2TableTitle2')}}</span>
+                  <div  v-for="(d, i) in total.ShowTotalNum[index]">
+                    <span class="value" S><span class="myV">{{headers1[i]}}</span>-<span class="myV">{{headers2[i]}}</span></span>
+                    <span class="value imval" style="padding-left: 5%;">
+                  {{!d || (data['w' + (i*1+1)]*1 + data['wo' + (i*1+1)]*1)==0 ?'':(data['w' + (i*1+1)]*1 + data['wo' + (i*1+1)]*1)}}
+                </span>
+                  </div>
+
+                </div>
+                <div class="card-view">
+                  <span class="title ">{{$t('swineReport.farrow')}} </span>
+                  <span class="value imval">{{farrow[index]==0?'':farrow[index]}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.farrowR')}} </span>
+                  <span class="value imval">
+                  {{farrow[index]==0||data['sow']==0?'':(100*farrow[index]/data['sow']).toFixed(2) }}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.adjfarrowR')}} </span>
+                  <span class="value imval">
+                  {{farrow[index]==0 || data['sow']-data['culled_by_abort']==0 ? '' : (100*farrow[index]/(data['sow']-data['culled_by_abort'])).toFixed(2)}}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.notFarrow')}} </span>
+                  <span class="value imval">
+                  {{data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+                  +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+                  +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+                  +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+                  +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1}}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.expectFarrowR')}} </span>
+                  <span class="value imval">
+                {{((data['sow']-(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+                  +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+                  +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+                  +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+                  +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1))*100/(data['sow']==0?1:data['sow'])).toFixed(2)}}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.expectFarrowD')}} </span>
+                  <span class="value imval">{{data.exp1}} - {{data.exp2}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr v-show="parStatue && datas" v-for="(data,index) in datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.breedGroup')}}</span>
+                  <span class="value imval"> {{data['mate_group']}} </span>
+                </div>
+                <div class="card-view">
+                  <span class="title"> {{$t('swineReport.mateingDays')}} </span>
+                  <span class="value imval"> {{data['week_start_date']}}-{{data['week_end_date']}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title"> {{$t('swineReport.sow')}} </span>
+                  <span class="value imval"> {{data['sow']}} </span>
+                </div>
+                <div class="card-view">
+                  <span class="title"> {{$t('swineReport.total')}} </span>
+                  <span class="value imval">{{summary[index]}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.report2TableTitle')}}</span>
+                  <div  v-for="(d, i) in total.ShowTotalNum[index]">
+                    <span class="title"><span class="myV">{{headers1[i]}}</span>-<span class="myV">{{headers2[i]}}</span></span>
+                    <span class="value imval" style="padding-left: 5%">
+                    {{d || (data['sow'] - getSum(data, (i*1+1))) ==0?(data['sow'] - getSum(data, (i*1+1))):''}}
+                </span>
+                  </div>
+
+                </div>
+                <div class="card-view">
+                  <span class="title ">{{$t('swineReport.farrow')}} </span>
+                  <span class="value imval">
+                  {{farrow[index]==0?'':farrow[index]}}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.farrowR')}} </span>
+                  <span class="value imval">
+                  {{farrow[index]==0||data['sow']==0?'':(100*farrow[index]/data['sow']).toFixed(2) }}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.adjfarrowR')}} </span>
+                  <span class="value imval">
+                  {{farrow[index]==0 || data['sow']-data['culled_by_abort']==0 ? '' : (100*farrow[index]/(data['sow']-data['culled_by_abort'])).toFixed(2)}}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.notFarrow')}} </span>
+                  <span class="value imval">
+                  {{(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+                  +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+                  +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+                  +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+                  +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1)==0?'':(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+                  +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+                  +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+                  +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+                  +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1)}}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.expectFarrowR')}} </span>
+                  <span class="value imval">
+                  {{((data['sow']-(data['w1']*1 + data['wo1']*1 + data['w2']*1 + data['wo2']*1 + data['w3']*1 + data['wo3']*1 + data['w4']*1 + data['wo4']*1
+                  +data['w5']*1 + data['wo5']*1 + data['w6']*1 + data['wo6']*1 + data['w7']*1 + data['wo7']*1 + data['w8']*1 + data['wo8']*1
+                  +data['w9']*1 + data['wo9']*1 + data['w10']*1 + data['wo10']*1 + data['w11']*1 + data['wo11']*1 + data['w12']*1 + data['wo12']*1
+                  +data['w13']*1 + data['wo13']*1 + data['w14']*1 + data['wo14']*1 + data['w15']*1 + data['wo15']*1 + data['w16']*1 + data['wo16']*1
+                  +data['w17']*1 + data['wo17']*1 + data['w18']*1 + data['wo18']*1))*100/(data['sow']==0?1:data['sow'])).toFixed(2)}}
+                </span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{$t('swineReport.expectFarrowD')}} </span>
+                  <span class="value imval">{{data.exp1}}-{{data.exp2}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <!--汇总-->
+          <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">{{$t('swineReport.total')}}</div>
+                  <div class="value"></div>
+                </div>
+              </div>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">{{$t('swineReport.sow')}}</div>
+                  <div class="value">{{summary[summary.length-1]}}</div>
+                </div>
+
+              </div>
+              <div class="card-views" v-for="(d, i) in total.sumd">
+                <div class="card-value">
+                  <span class="title"><span class="myV">{{headers1[i]}}</span>-<span class="myV">{{headers2[i]}}</span></span>
+                  <div class="value">{{isNaN(summary[summary.length-1]-d)?'':summary[summary.length-1]-d}}</div>
+                </div>
+              </div>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">{{$t('swineReport.farrow')}}</div>
+                  <div class="value">{{total.sumAmount19==0?'':total.sumAmount19}}</div>
+                </div>
+
+              </div>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">{{$t('swineReport.farrowR')}}</div>
+                  <div class="value">
+                    {{(100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort']))==0 || ((100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort'])).toFixed(2)) == 'NaN'?'':(100*total.sumAmount19/(summary[summary.length-1] - total['culled_by_abort'])).toFixed(2)}}
+                  </div>
+                </div>
+
+              </div>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">{{$t('swineReport.adjfarrowR')}}</div>
+                  <div class="value">
+                    {{total.sumAmount19==0?'':total.sumAmount19}}
+                  </div>
+                </div>
+
+              </div>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">{{$t('swineReport.notFarrow')}} </div>
+                  <div class="value">
+                    {{total.noPragnantNum == 0?'':total.noPragnantNum}}
+                  </div>
+                </div>
+              </div>
+              <div class="card-views">
+                <div class="card-view">
+                  <div class="title">{{$t('swineReport.expectFarrowR')}} </div>
+                  <div class="value">
+                    {{(100*(summary[summary.length-1]-total.noPragnantNum)/summary[summary.length-1]).toFixed(2) == 'NaN'?'':(100*(summary[summary.length-1]-total.noPragnantNum)/summary[summary.length-1]).toFixed(2)}}
+                  </div>
+                </div>
+              </div>
+
+            </td>
+          </tr>
+
+
+          <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">未怀孕母猪</div>
+                  <div class="value"></div>
+                </div>
+              </div>
+              <div class="card-views" v-for="(s, i) in total.sum">
+                <div class="card-value">
+                  <span class="title"><span class="myV">{{headers1[i]}}</span>-<span class="myV">{{headers2[i]}}</span></span>
+                  <div class="value">{{s==0?'':s}}</div>
+                </div>
+              </div>
+            </td>
+
+          </tr>
+          <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-value">
+                  <div class="title">NP{{$t('swineReport.days')}}</div>
+                  <div class="value"></div>
+                </div>
+              </div>
+              <div class="card-views" v-for="(s, i) in total.npDay">
+                <div class="card-value">
+                  <span class="title"><span class="myV">{{headers1[i]}}</span>-<span class="myV">{{headers2[i]}}</span></span>
+                  <div class="value">{{s==0?'':s}}</div>
+                </div>
+              </div>
+            </td>
+
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p v-show=" tableFlag && datas.length == 0" style="text-align: center;">{{$t('swineReport.noData')}}</p>
+  </div>
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import vueLoading from 'vue-loading-template'
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  import Grbr001 from '@/components/cm/grbr001'
+  import Weekse001 from '@/components/cm/weekse001'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-Report04',
+    components: {
+      Dtre001,
+      Dtre002,
+      Grbr001,
+      Weekse001,
+      vueLoading
+    },
+    data () {
+      return {
+        Sheader: [], // 用来控制是否显示改行header
+        up: true,
+        dateNow: '',
+        dates: [],
+        datas: [],
+        tag: {
+          SheaderL1: 0,
+          SheaderL2: 0
+        },
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        startDate: '',
+        endDate: '',
+        chartDates: [],
+        breeds: [], // 所有的品种。
+        checked: [], // 当前选中的品种，用id
+        totalBreeder: [], // 品种
+        totalBreederName: [],
+        parity: 'ALL',
+        pregnant: 'Y',
+        parStatue: true,
+        pregnantDay: '115',
+        dayArr: [
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'},
+          {day: '7'}
+        ],
+        mateGroup1: '',
+        mateGroup2: '',
+        groupList: [],
+        headers1: [],
+        headers2: [],
+        summary: [],
+        farrow: [],
+        total: {
+          sum: [],
+          npDay: [],
+          sumw: [],
+          ShowTotalNum: []
+        },
+        htmlTitle: this.$t('message.titleSwineReport04'),
+        exStDate: '',
+        exEnDate: '',
+        tableTh: ''
+      }
+    },
+    computed: {
+      checkAll: {
+        get: function () {
+          return this.totalBreeders.length === this.breeds.length
+        },
+        set: function (all) {
+          if (all) {
+            this.checked = this.tag.AllBreeder
+          } else {
+            this.checked = []
+          }
+        }
+      },
+      totalBreedersString: function () {
+        var _self = this
+        var sum = ''
+        _self.totalBreeders.forEach(function (breeder) {
+          sum += breeder + ','
+        })
+        return sum
+      },
+      totalBreeders: function () {
+        let _self = this
+        return _self.checked.map(function (item) {
+          return _self.totalBreeder[item - 1]
+        })
+      },
+      totalBreedersN: function () {
+        let _self = this
+        return _self.checked.map(function (item) {
+          return _self.totalBreederName[item - 1]
+        })
+      }
+    },
+    created () {
+      this.getWeekYearly()
+      this.getBreeder()
+    },
+    methods: {
+      getBreeder () {
+        let _self = this
+        jQuery.ajax({
+          url: 'standard/' + _self.orgCode + '/breedTypeByOrg',
+          type: 'GET',
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            res.splice(0, 1)
+            res.map(function (item, index) {
+              _self.checked.push(parseInt(index + 1))
+              _self.totalBreeder.push(item.PRODUCTID)
+              _self.totalBreederName.push(item.PRODUCTNAME)
+            })
+            _self.breeds = res
+            _self.tag.AllBreeder = _self.checked
+          },
+          fail: function (e) {
+            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          },
+          error: function (e) {
+            console.log(e.status)
+          }
+        })
+      },
+      getExcel () {
+        var excelTitle = '<h1 style="text-align: center">' + this.tableTh.desc_loc + '</h1>'
+        excelTitle += '<h2 style="text-align: center">' + this.htmlTitle + '</h2>'
+        excelTitle += '<h3 style="text-align: left">' + this.tableTh.org_code + '&nbsp;&nbsp;' + this.language === 'en' ? this.tableTh.org_name_eng : this.tableTh.org_name_loc + '</h3>'
+        excelTitle += '<div style="font-weight: bold"><span>' + this.$t('swineReport.farm') + ':' + this.tableTh.farm_org + '&nbsp;&nbsp;' + this.tableTh.farm_name_loc + '</span>'
+        excelTitle += '<span>' + this.$t('swineReport.breedingDate') + ':' + this.exStDate + this.$t('swineReport.to') + this.exEnDate + '</span></div>'
+
+        if (this.pregnant === 'Y') {
+          this.tableToExcel2(excelTitle, 'tableContent2')
+        } else {
+          this.tableToExcel2(excelTitle, 'tableContent')
+        }
+      },
+      down () {
+        this.up = !this.up
+      },
+      getWeekYearly () {
+        var _self = this
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/getWeekYearly',
+          type: 'GET',
+          //  contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            _self.groupList = res
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      },
+      getStartGroup (d) {
+        this.mateGroup1 = d.mateGroup
+      },
+      getEndGroup (d) {
+        this.mateGroup2 = d.mateGroup
+      },
+      getSum (data, i) {
+        var sumw = 0
+        for (let j = 1; j <= i; j++) {
+          sumw += data['w' + j] * 1 + data['wo' + j] * 1
+        }
+        return sumw
+      },
+      doSearch () {
+        let _self = this
+        _self.tag.mateGroup1 = _self.mateGroup1
+        _self.tag.mateGroup2 = _self.mateGroup2
+        _self.tag.pregnant = _self.pregnant
+        _self.tag.pregnantDay = _self.pregnantDay
+        _self.tag.parity = _self.parity
+        _self.loadFlag = true
+        _self.tableFlag = false
+//        表头怀孕与否
+        _self.pregnant === 'Y' ? _self.parStatue = true : _self.parStatue = false
+//        表头那些数字
+        _self.headers1 = []
+        _self.headers2 = []
+        _self.total.sum = []
+        _self.total.npDay = []
+        _self.total.ShowTotalNum = []
+        _self.Sheader = []
+        _self.dayArr.reduce(function (sum, value) {
+          console.log('天数范围-------' + typeof value.day)
+          if (value.day === '' || value.day === '0') {
+            value.day = '0'
+            _self.Sheader.push(false)
+            _self.tag.SheaderL1 = 1
+          } else {
+            _self.Sheader.push(true)
+            _self.tag.SheaderL2 = 2
+          }
+//          if (_self.tag.SheaderL2 === 0) {
+//            _self.Sheader[8] = true
+//          }
+          _self.headers2.push(sum * 1 + value.day * 1)
+          return sum * 1 + value.day * 1
+        }, 0)
+//        console.log(_self.headers2.length)
+//        console.log('headers2')
+        console.log('显示不显示呢？')
+        console.log(_self.Sheader)
+        _self.headers1 = _self.headers2.map(function (item, index) {
+          return item * 1 + 1
+        })
+        _self.headers1.splice(17, 1)
+        _self.headers1.splice(0, 0, 0)
+//        console.log(_self.headers1)
+//        console.log(_self.headers2)
+        let nowDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report4',
+          type: 'POST',
+          data: {'parDays1': _self.headers2[0], 'parDays2': _self.headers2[1], 'parDays3': _self.headers2[2], 'parDays4': _self.headers2[3], 'parDays5': _self.headers2[4], 'parDays6': _self.headers2[5], 'parDays7': _self.headers2[6], 'parDays8': _self.headers2[7], 'parDays9': _self.headers2[8], 'parDays10': _self.headers2[9], 'parDays11': _self.headers2[10], 'parDays12': _self.headers2[11], 'parDays13': _self.headers2[12], 'parDays14': _self.headers2[13], 'parDays15': _self.headers2[14], 'parDays16': _self.headers2[15], 'parDays17': _self.headers2[16], 'parDays18': _self.headers2[17], 'parGestation': _self.pregnantDay, 'mateGroup1': _self.mateGroup1, 'mateGroup2': _self.mateGroup2, 'parity': _self.parity, 'breeder': _self.totalBreedersString},
+//          data: {'parDays1': '7', 'parDays2': '14', 'parDays3': '21', 'parDays4': '28', 'parDays5': '35', 'parDays6': '42', 'parDays7': '49', 'parDays8': '56', 'parDays9': '63', 'parDays10': '70', 'parDays11': '77', 'parDays12': '84', 'parDays13': '91', 'parDays14': '98', 'parDays15': '105', 'parDays16': '112', 'parDays17': '119', 'parDays18': '126', 'parGestation': '115', 'mateGroup1': '1752', 'mateGroup2': '1805', 'parity': 'ALL', 'breeder': '01,02,03,04,05,06,08,11,21,22,29,31,40,51,70,73,79,WP,'},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            if (res.length > 0) {
+              _self.tableTh = res[0]
+              _self.exStDate = res[0]['week_start_date']
+              _self.exEnDate = res[res.length - 1]['week_end_date']
+              _self.tag.dateNow = res[0]['printReportTime']
+            }
+//            _self.chartDatas = res.slice(0, (res.length - 1))
+//            _self.drawChart(_self.chartDatas)
+            var mateDateArr = res.map(function (item, index) {
+              return (new Date(item['week_start_date']))
+            })
+            console.log(mateDateArr.length)
+            console.log(nowDate)
+            mateDateArr.map(function (v, i) {
+              var iDiffDays = parseInt((nowDate - v) / 1000 / 60 / 60 / 24)
+//              console.log('IDDAYS---' + iDiffDays)
+              _self.total.ShowTotalNum[i] = _self.headers1.map(function (a) {
+//                console.log('a ==' + a)
+                if (iDiffDays >= a) {
+                  return true
+                } else {
+                  return false
+                }
+              })
+            })
+            console.log('ShowTotalNum --- ---- ---')
+            console.log(_self.total.ShowTotalNum)
+//            console.log(_self.total.ShowTotalNum.length)
+            var sow = res.map(function (item) {
+              return item.sow
+            })
+            _self.farrow = res.map(function (item) {
+              return item.farrow
+            })
+            var sum = 0
+            _self.summary = sow.map(function (item, index) {
+              sum += item
+              return sum
+            })
+//            三行汇总 total['sumAmount' + i]
+            for (var i = 1; i < 19; i++) {
+              var name = 'sumAmount' + i
+              _self.total[name] = res.map((item, index) => (item['w' + i] * 1 + item['wo' + i] * 1)).reduce((acc, cur) => (parseFloat(cur) + acc), 0)
+              _self.total.sum.push(_self.total[name])
+              var np = 'np' + i
+              _self.total[np] = res.map((item, index) => (item['diff_abort_date' + i] * 1 + item['diff_cull_date' + i] * 1 + item['diff_tou_date' + i] * 1)).reduce((acc, cur) => (parseFloat(cur) + acc), 0)
+              _self.total.npDay.push(_self.total[np])
+            }
+//            w1+wo1 , w1+wo1+w2+wo2等累加成为一个数组
+            var sumd = 0
+            _self.total.sumd = _self.total.sum.map(function (item, index) {
+              sumd += item
+              return sumd
+            })
+//              未分娩的总数
+            _self.total.noPragnantNum = res.map((item) => (item['w1'] * 1 + item['wo1'] * 1 + item['w2'] * 1 + item['wo2'] * 1 + item['w3'] * 1 + item['wo3'] * 1 + item['w4'] * 1 + item['wo4'] * 1 + item['w5'] * 1 + item['wo5'] * 1 + item['w6'] * 1 + item['wo6'] * 1 + item['w7'] * 1 + item['wo7'] * 1 + item['w8'] * 1 + item['wo8'] * 1 + item['w9'] * 1 + item['wo9'] * 1 + item['w10'] * 1 + item['wo10'] * 1 + item['w11'] * 1 + item['wo11'] * 1 + item['w12'] * 1 + item['wo12'] * 1 + item['w13'] * 1 + item['wo13'] * 1 + item['w14'] * 1 + item['wo14'] * 1 + item['w15'] * 1 + item['wo15'] * 1 + item['w16'] * 1 + item['wo16'] * 1 + item['w17'] * 1 + item['wo17'] * 1 + item['w18'] * 1 + item['wo18'] * 1)).reduce((acc, cur) => (parseFloat(cur) + acc), 0)
+//          求和farrow
+            _self.total.sumAmount19 = res.map((item, index) => (item.farrow * 1)).reduce((acc, cur) => (parseFloat(cur) + acc), 0)
+            _self.total.culled_by_abort = res.map((item) => (item['culled_by_abort'])).reduce((acc, cur) => (parseFloat(cur) + acc), 0)
+            _self.loadFlag = false
+            _self.tableFlag = true
+          },
+          fail: function (e) {
+            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
+    background-color: orange;
+    cursor: pointer !important;
+  }
+  .nav-tabs a{
+    cursor: pointer !important;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  .laber-info{
+    width: 40%;
+    font-weight:700;
+    text-align: center;
+  }
+  .laber-input{
+    border: 1px solid #b5bbc8;
+    width: 60%;
+  }
+  .breedLi{
+    padding: 5px 10px;
+  }
+  li.breedLi:hover,li.breedLi:active{
+    background-color: #efefef;
+  }
+  .textWords{
+    /*white-space: nowrap;*/
+    color: #aaa;
+    background-color: #fff;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    font-size: 1.2rem;
+  }
+  .imval{
+    color: #0d6aad;
+  }
+  .myV{
+    padding: 0 5px;
+  }
+  .value{
+  }
+</style>

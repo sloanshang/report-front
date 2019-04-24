@@ -1,0 +1,133 @@
+<template>
+    <div class="content-wrapper" style="min-height: 610px;padding:0 15px;">
+      <Cmghre001 :orgCode ="orgCode"  :farmOrg="farmOrg" ></Cmghre001>
+      <div class="row">
+        <div >
+          <h1 style="font-size: 1.5em;text-align: center;">饲料总结报表</h1>
+          <div style="float: right;">
+            <select style="width:60px;height: 30px;">
+              <option>excel</option>
+              <option>pdf</option>
+            </select>
+            <button class="btn btn-primary">导出</button>
+          </div>
+        </div>
+        <table class="table table-hover table-striped" style="margin-bottom: 55px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>Amount</th>
+            <th>FeedName</th>
+            <th>Number</th>
+            <th>Price</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr v-for="(p1, index) in tableData01">
+            <td>{{p1.amount}}</td>
+            <td>{{p1.feedname}}</td>
+            <td>{{p1.number}}</td>
+            <td>{{p1.price}}</td>
+          </tr>
+
+          </tbody>
+          <tbody v-else="">
+          <tr  v-for="(p1, index) in tableData01">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">Amount</span>
+                  <span class="value">{{p1.amount}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">FeedName</span>
+                  <span class="value">{{p1.feedname}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">Number</span>
+                  <span class="value">{{p1.number}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">price</span>
+                  <span class="value">{{p1.price}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+</template>
+
+<script>
+import BootstrapTable from 'bootstrap-table'
+import Cmghre001 from '@/components/cm/ghre001'
+import jQuery from 'jquery'
+export default {
+  name: 'growerReport06',
+  components: {
+    BootstrapTable,
+    Cmghre001
+  },
+  props: ['orgCode', 'farmOrg', 'device'],
+  mounted () {
+    this.getData()
+  },
+  data () {
+    return {
+      tableData01: []
+    }
+  },
+  methods: {
+    getData () {
+      var _self = this
+      jQuery.ajax({
+        url: '/grower/grower6Test',
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function (res) {
+          _self.tableData01 = res
+          console.log(11111111)
+          console.log(res.length)
+          // window.location.reload()
+        },
+        fail: function (e) {
+          console.log('查询失败')
+        }
+      })
+    }
+  }
+}
+</script>
+<style>
+  .card-views .title{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left!important;
+  }
+  .table thead, .table tr {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: rgb(0, 189, 189);
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+</style>

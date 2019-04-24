@@ -1,0 +1,222 @@
+<template>
+  <div class="row" id="pdfDom" style="padding: 55px 16px;background-color:#fff;">
+    <form class="form" style="overflow: hidden">
+      <div v-show="!up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('spiReport.farm')}}: </div>
+            <input class="form-control" readonly v-model="farmName" />
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="form-control" style="padding: 0;border: none;">
+              <dtre003  :currentDate="new Date()" v-on:changeDate="doChangeStart"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('spiReport.variety')}}： </div>
+            <div class="form-control" style="padding: 0;">
+              <Variety002 :language="language" style="width: 100%;" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getVariety="getVariety" size="small"></Variety002>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">{{$t('spiReport.search')}}</button>&nbsp;
+          <button type="button" class="btn btn-primary" @click="getExcel">{{$t('spiReport.export')}} Excel</button>&nbsp;
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('spiReport.export')}} PDF</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" v-show="!up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" v-show="up" @click="down"></span>
+          <div v-show="false" style="border: 1px solid red;"><a href="#" id="dlink"></a><a href="#" id="dlink2"></a></div>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-show="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-if="!loadFlag && datas.length !== 0">
+      <el-table id="stable" height="400"  stripe border fit :empty-text="(language==='en')?'no Date': '暂无数据'" :data="datas.slice((currentPage-1)*pagesize,currentPage*pagesize)" style="width: 100%;">
+        <el-table-column prop="BREEDER_NAME" :label="(language==='en')?label.en[0]:label.zh[0]"> </el-table-column>
+        <el-table-column prop="SWINE_TRACK" :label="(language==='en')?label.en[1]:label.zh[1]" > </el-table-column>
+        <el-table-column prop="CURRENT_PARITY" :label="(language==='en')?label.en[2]:label.zh[2]"> </el-table-column>
+        <el-table-column prop="FARROW_DATE" :label="(language==='en')?label.en[3]:label.zh[3]"> </el-table-column>
+        <el-table-column prop="BVSP" :label="(language==='en')?label.en[4]:label.zh[4]"> </el-table-column>
+        <el-table-column prop="RANK" :label="(language==='en')?label.en[5]:label.zh[5]"> </el-table-column>
+      </el-table>
+      <el-pagination background layout="prev, pager, next" :page-size="20" :pager-count="7" :total="total"  @current-change="current_change"  style="width: 100%;text-align: right;margin-top: 20px">
+      </el-pagination>
+    </div>
+    <p v-show=" !loadFlag && datas.length == 0" style="text-align: center;">{{$t('spiReport.noData')}}</p>
+  </div>
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import Dtre003 from '@/components/cm/dtre003'
+  import Variety002 from '@/components/cm/variety002'
+  import Weekse001 from '@/components/cm/weekse001'
+  import vueLoading from 'vue-loading-template'
+  import df from 'dateformat'
+
+  export default {
+    props: ['orgCode', 'farmOrg', 'device', 'language'],
+    name: 'spiReport01',
+    components: {
+      Dtre003,
+      Variety002,
+      Weekse001,
+      vueLoading
+    },
+    data () {
+      return {
+        farmName: this.farmOrg,
+        loadFlag: false,
+        up: false,
+        breed: '02',
+        datas: [],
+        reportId: '8004001',
+        total: 0,
+        pagesize: 20,
+        currentPage: 1,
+        htmlTitle: 'GP场SPI/BVSP排名',
+        label: {
+          en: ['breed', 'sow id', 'current_parity', 'previous_farrow_date', 'BVSP', 'rank'],
+          zh: ['品系', '母猪id', '当前胎次', '上次分娩时间', 'BVSP', '排名']
+        }
+      }
+    },
+    created () {
+      this.doSearch()
+    },
+    methods: {
+      down () {
+        this.up = !this.up
+      },
+      doChangeStart (d) {
+      },
+      getExcel () {
+        jQuery('#dlink').attr('href', '#')
+        var _self = this
+        _self.loadFlag = true
+        if (_self.datas.length === 0) {
+          alert('当前没有可导出数据')
+          _self.loadFlag = false
+          return
+        }
+        console.log(_self.datas)
+        jQuery.ajax({
+          url: '/breeder/' + _self.orgCode + '/' + _self.farmOrg + '/' + _self.breed + '/' + _self.reportId + '/exportStandardExcel',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(_self.datas),
+          dataType: 'json',
+          success: function (res) {
+            if (res.status === 'success') {
+              var url = '/static/' + _self.reportId + '/' + _self.language + '/tempExcel/swineStandard/' + res.name
+              jQuery('#dlink').attr('href', url)
+              document.getElementById('dlink').click()
+              _self.loadFlag = false
+            }
+          },
+          complete: function (res) {
+            _self.loadFlag = false
+            if (res.status !== 200) {
+              console.log(res.statusText)
+            }
+          }
+        })
+      },
+      getPdf () {
+        jQuery('#dlink2').attr('href', '#')
+        var _self = this
+        _self.loadFlag = true
+        if (_self.datas.length === 0) {
+          alert('当前没有可导出数据')
+          _self.loadFlag = false
+          return
+        }
+        console.log(_self.datas)
+        jQuery.ajax({
+          url: '/breeder/' + _self.orgCode + '/' + _self.farmOrg + '/' + _self.breed + '/' + _self.reportId + '/exportStandardPdf',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(_self.datas),
+          dataType: 'json',
+          success: function (res) {
+            if (res.status === 'success') {
+              var url = '/static/' + _self.reportId + '/' + _self.language + '/tempExcel/swineStandard/' + res.name + '?type=1'
+              jQuery('#dlink2').attr('href', url)
+              document.getElementById('dlink2').click()
+              _self.loadFlag = false
+            }
+          },
+          complete: function (res) {
+            _self.loadFlag = false
+            if (res.status !== 200) {
+              console.log(res.statusText)
+            }
+          }
+        })
+      },
+      getPdf22 () {
+        var _self = this
+        var url = '/breeder/' + _self.orgCode + '/' + _self.farmOrg + '/' + _self.breed + '/exportPDF'
+        jQuery('#dlink2').attr('href', url)
+//        jQuery.ajax({
+//          url: '/report/breeder/' + _self.orgCode + '/' + _self.farmOrg + '/' + _self.breed + '/exportExcel',
+//          type: 'POST',
+//          contentType: 'application/json',
+//          data: JSON.stringify({'startDate': df(new Date(), 'yyyy-mm-dd'), 'endDate': df(new Date(), 'yyyy-mm-dd'), 'gdType': ['SWBD0101'], 'gdCode': ['1001'], 'breeder': _self.breed, 'datasFlag': '1'}),
+//          dataType: 'json',
+//          success: function (res) {
+//            _self.loadFlag = false
+//            alert('导出成功')
+//          },
+//          complete: function (res) {
+//            _self.loadFlag = false
+//            if (res.status !== 200) {
+//              alert(res.status)
+//            }
+//          }
+//        })
+      },
+      getVariety (breedId) {
+        var _self = this
+        _self.breed = breedId
+      },
+      current_change (currentPage) {
+        this.currentPage = currentPage
+      },
+      doSearch () {
+        var _self = this
+        _self.loadFlag = true
+        jQuery.ajax({
+          url: '/report/' + _self.orgCode + '/' + _self.farmOrg + '/get_report',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({'startDate': df(new Date(), 'yyyy-mm-dd'), 'endDate': df(new Date(), 'yyyy-mm-dd'), 'gdType': ['SWBD0101'], 'gdCode': ['1001'], 'breeder': _self.breed, 'datasFlag': '1'}),
+          dataType: 'json',
+          success: function (res) {
+            _self.loadFlag = false
+            _self.datas = res
+            _self.total = res.length
+          },
+          complete: function (res) {
+            _self.loadFlag = false
+            if (res.status !== 200) {
+              console.log(res.statusText)
+            }
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style>
+  .el-table::before{
+    background-color: rgba(0,0,0,0);
+  }
+</style>

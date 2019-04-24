@@ -1,0 +1,210 @@
+<template>
+  <div class="row" id="pdfDom" style="padding-top: 55px;padding-bottom:75px;background-color:#fff;">
+    <form class="form" style="overflow: hidden">
+      <div v-show="!up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.farm')}}: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <!--查询的日期范围-->
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.searchDate')}}: </div>
+            <div class="form-control" style="padding: 0;">
+              <el-date-picker style="width: 100%;" v-model="selectDate" type="date" placeholder="选择日期" default-value="" size="small" value-format="yyyy-MM-dd"></el-date-picker>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">{{$t('swineReport.search')}}</button>&nbsp;
+          <button type="button" class="btn btn-primary">{{$t('swineReport.export')}} Excel</button>&nbsp;
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('swineReport.export')}} PDF</button>
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" v-show="!up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" v-show="up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-if="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-if="tableFlag  && datas.length !== 0" style="padding: 0 25px;">
+      <h4 style="text-align: center">{{$t('message.titleSwineReport13')}}</h4>
+      <div style="padding-bottom: 4px"><el-tag size="small ">{{$t('swineReport.farm')}}:{{tableTh.farm_org}}&nbsp;{{tableTh.farm_name_loc}}</el-tag><el-tag size="small ">{{$t('swineReport.printTime')}}:{{tableTh.printReportTime}}</el-tag></div>
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr v-if="tableFlag">
+          <th>{{$t('swineReport.parity')}}</th>
+          <th>{{$t('swineReport.quantity')}}</th>
+          <th>{{$t('swineReport.rate')}}</th>
+          <th>STD</th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr v-for="data in datas">
+          <td>{{data.litno}}</td>
+          <td>{{data.count_data}}</td>
+          <td>{{data.percent_rate}}</td>
+          <td>{{data.std}}</td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+          <tr v-for="data in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.parity')}} </span>
+                <span class="value"> {{data.litno}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.quantity')}} </span>
+                <span class="value"> {{data['count_data']}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.tate')}} </span>
+                <span class="value">{{data.percent_rate}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.std')}} </span>
+                <span class="value">  {{data.std}}  </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-show="tableFlag && datas.length !== 0" id="container" style="width:100%;"></div>
+    <div v-show="tableFlag  && datas.length !== 0" style="padding: 0 25px;">
+      <span v-for="item in lastdatas" style="padding: 0 20px">
+        <span>{{item.litno}} :</span>
+        <span style="font-weight: 700;">{{item.count_data}}</span>
+      </span>
+    </div>
+    <p v-show="tableFlag && datas.length == 0" style="text-align: center;">{{$t('swineReport.noData')}}</p>
+  </div>
+
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import G2 from 'g2'
+  import vueLoading from 'vue-loading-template'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-Report13',
+    components: {
+      vueLoading
+    },
+    data () {
+      return {
+        up: false,
+        datas: [],
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        selectDate: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
+        chartDatas: [],
+        htmlTitle: this.$t('message.titleSwineReport13'),
+        lastdatas: [],
+        tableTh: ''
+      }
+    },
+    methods: {
+      down () {
+        this.up = !this.up
+      },
+      drawChart: function (datas) {
+        this.chart && this.chart.destroy()
+        this.chart = new G2.Chart({
+          id: 'container',
+          forceFit: true, // 根据容器的宽度自适应
+          height: 250
+        })
+        this.chart.source(datas, {
+          litno: {
+            alias: this.$t('swineReport.parity'),
+            type: 'cat'
+          },
+          count_data: {
+            alias: this.$t('swineReport.quantity')
+          }
+        })
+        this.chart.interval().position('litno*count_data').color('#03b8ff')
+          .shape('rect')
+          .label('count_data', {offset: 10, label: {fill: '#000'}})
+        this.chart.animate(false)
+        this.chart.render()
+      },
+      doSearch () {
+        var _self = this
+        _self.datas = ''
+        _self.tableFlag = false
+        _self.loadFlag = true
+        _self.chartDatas = []
+        _self.lastdatas = []
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report13',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'startDate': _self.selectDate},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            _self.tableTh = res[0]
+            _self.lastdatas.push(res[res.length - 1])
+            _self.lastdatas.push(res[res.length - 2])
+            for (var i = 0; i < res.length; i++) {
+              if (res[i].isMerg !== '1') {
+                _self.chartDatas.push({
+                  litno: res[i].litno,
+                  count_data: res[i].count_data
+                })
+              }
+            }
+            _self.$nextTick(function () {
+              _self.drawChart(_self.chartDatas)
+            })
+            _self.loadFlag = false
+            _self.tableFlag = true
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+</style>

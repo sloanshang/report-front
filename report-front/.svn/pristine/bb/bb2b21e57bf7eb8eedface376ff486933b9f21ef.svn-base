@@ -1,0 +1,316 @@
+<template>
+  <div class="row" id="pdfDom" style="padding-top: 55px;background-color: #fff;">
+    <form class="form" style="overflow: hidden;">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.farm')}}: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <!--pc端查询日期-->
+        <div class="form-group col-xs-12 col-sm-6" v-show="device=='PC'">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.breedingDate')}}: </div>
+            <div class="form-control" style="padding: 0; bottom: 0px">
+              <el-date-picker style="width: 100%;" size="small"v-model="daterangeVal" type="daterange"
+                              :range-separator="this.$t('swineReport.to')" :start-placeholder="startDate" :end-placeholder="endDate"
+                              :picker-options="pickerOptions2" value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </div>
+          </div>
+        </div>
+        <!--查询的日期范围-->
+        <div class="form-group col-xs-12 col-sm-6" v-show="device=='M'">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.breedDate')}}: </div>
+            <div class="form-control" style="padding: 0;height: auto; border: none">
+              <dtre001 :date="startDate"  style="float:left; padding-right:2px" v-on:changeDate="doChangeStart"/>
+              <dtre002 :date="endDate" style="float:left; padding-right:2px" v-on:changeDate="doChangeEnd"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-12">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.rangeOfDays')}}: </div>
+            <div class="form-control" style="height: auto">
+              <div class="col-xs-4 col-sm-2 col-md-1 col-lg-1" style="padding: 0" v-for="(d, index) in dayArr">
+                <label class="laber-info">{{index+1}}:</label><input type="text" class="laber-input" v-model="d.day">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">{{$t('swineReport.search')}}</button>&nbsp;
+          <a href="" id="dlink"><button type="button" class="btn btn-primary" @click="getExcel">{{$t('swineReport.export')}} Excel</button>&nbsp;</a>
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('swineReport.export')}} PDF</button>
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-if="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-show="tableFlag && datas.length !== 0" style="padding: 0 25px;">
+      <h4 style="text-align: center">{{$t('message.titleSwineReport09')}}</h4>
+      <div style="padding-bottom: 4px"><el-tag size="small ">{{$t('swineReport.farm')}}:{{tableTh.farm_org}}&nbsp;{{tableTh.farm_name_loc}}</el-tag><el-tag size="small ">{{$t('swineReport.daterange')}}:{{daterangeVal[0] || startDate}}&nbsp;-&nbsp;{{daterangeVal[1] || endDate}}</el-tag><el-tag size="small ">{{$t('swineReport.printTime')}}:{{tableTh.printReportTime}}</el-tag></div>
+      <table v-show="device=='PC'" id="tableContent" class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr>
+          <th style="text-align: left">{{$t('swineReport.daterange')}} </th>
+          <th style="text-align: right">{{$t('swineReport.qty')}} </th>
+          <th style="text-align: right">{{$t('swineReport.rate')}} </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="data in datas">
+          <td style="text-align: left">{{data.group_repeat_name}}</td>
+          <td style="text-align: right">{{data.count_qty}}</td>
+          <td style="text-align: right">{{data.percent_rate}}%</td>
+        </tr>
+        </tbody>
+      </table>
+      <table v-show="device=='M'" class="table table-bordered table-hover table-striped">
+        <tbody>
+        <tr v-for="data in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.daterange')}} </span>
+                <span class="value"> {{data.group_repeat_name}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.qty')}} </span>
+                <span class="value"> {{data.count_qty}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.rate')}} </span>
+                <span class="value"> {{data.percent_rate}} %</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-show="tableFlag && datas.length !== 0" id="container" style="margin: 20px auto 60px;"></div>
+    <p v-show="tableFlag && datas.length == 0" style="text-align: center;">{{$t('swineReport.noData')}}</p>
+  </div>
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  import {formatDate} from '@/components/utils/date'
+  import vueLoading from 'vue-loading-template'
+  import G2 from 'g2'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-Report09',
+    components: {
+      Dtre001,
+      Dtre002,
+      vueLoading
+    },
+    watch: {
+      daterangeVal: function (e) {
+        console.log(e)
+      }
+    },
+    data () {
+      return {
+        pickerOptions2: {
+          shortcuts: [{
+            text: this.$t('swineReport.lastWeek'),
+            onClick (picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: this.$t('swineReport.lastMonth'),
+            onClick (picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          }, {
+            text: this.$t('swineReport.threeMonth'),
+            onClick (picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
+            }
+          }]
+        },
+        daterangeVal: '',
+        up: true,
+        datas: [],
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        startDate: new Date(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)),
+        endDate: new Date(),
+        dayArr: [
+          {day: '1:4'},
+          {day: '5:9'},
+          {day: '10:14'},
+          {day: '15:19'},
+          {day: '20:24'},
+          {day: '25:29'},
+          {day: '30:39'},
+          {day: '35:39'},
+          {day: '40:44'},
+          {day: '45:49'},
+          {day: '50:54'},
+          {day: '55:59'},
+          {day: '60:64'},
+          {day: '65:69'},
+          {day: '70:74'},
+          {day: '75:79'},
+          {day: '80:84'},
+          {day: '85:89'},
+          {day: '90:94'},
+          {day: '95:99'},
+          {day: '100:'}
+        ],
+        chartDatas: [],
+        htmlTitle: this.$t('message.titleSwineReport09'),
+        tableTh: '',
+        exStDate: '',
+        exEnDate: ''
+      }
+    },
+    filters: {
+      formatDate (time) {
+        let date = new Date(time)
+        return formatDate(date, 'yyyy-MM-dd')
+      }
+    },
+    mounted () {
+      this.startDate = formatDate(this.startDate, 'yyyy-MM-dd')
+      this.exStDate = this.startDate
+      this.endDate = formatDate(this.endDate, 'yyyy-MM-dd')
+      this.exEnDate = this.endDate
+    },
+    methods: {
+      getExcel () {
+        var excelTitle = '<h1 style="text-align: center">' + this.tableTh.org_name_loc + '</h1>'
+        excelTitle += '<h2 style="text-align: center">' + this.htmlTitle + '</h2>'
+        excelTitle += '<div style="font-weight: bold"><span>' + this.$t('swineReport.farm') + ':' + this.tableTh.farm_org + '&nbsp;&nbsp;' + this.tableTh.farm_name_loc + '</span>'
+        excelTitle += '<span>&nbsp;&nbsp;' + this.$t('swineReport.queryDate') + ':' + this.exStDate + this.$t('swineReport.to') + this.exEnDate + '</span></div>'
+        this.tableToExcel2(excelTitle, 'tableContent')
+      },
+      doChangeStart (d) {
+        console.log('changeStart to ' + d)
+        this.startDate = d
+        this.startDate = formatDate(this.startDate, 'yyyy-MM-dd')
+      },
+      doChangeEnd (d) {
+        console.log('changeEnd to ' + d)
+        this.endDate = d
+        this.endDate = formatDate(this.endDate, 'yyyy-MM-dd')
+      },
+      down () {
+        this.up = !this.up
+      },
+      drawChart: function (datas) {
+        this.chart && this.chart.destroy()
+        this.chart = new G2.Chart({
+          id: 'container',
+          forceFit: true, // 根据容器的宽度自适应
+          height: 250
+        })
+        this.chart.source(datas, {
+          group_repeat_name: {
+            alias: this.$t('swineReport.daterange'),
+            type: 'cat'
+          },
+          count_qty: {
+            alias: this.$t('swineReport.qty')
+          }
+        })
+        this.chart.interval().position('group_repeat_name*count_qty').color('#03b8ff')
+          .shape('rect')
+          .label('count_qty', {offset: 10, label: {fill: '#000'}})
+        this.chart.animate(false)
+        this.chart.render()
+      },
+      doSearch () {
+        var _self = this
+        _self.datas = ''
+        _self.tableFlag = false
+        _self.loadFlag = true
+        _self.chartDatas = []
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report9',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'PAR_START_DATE': _self.daterangeVal[0] || _self.startDate, 'PAR_END_DATE': _self.daterangeVal[1] || _self.endDate, 'PAR_TEXT_BOX_DAYS_DETECT1': _self.dayArr[0].day, 'PAR_TEXT_BOX_DAYS_DETECT2': _self.dayArr[1].day, 'PAR_TEXT_BOX_DAYS_DETECT3': _self.dayArr[2].day, 'PAR_TEXT_BOX_DAYS_DETECT4': _self.dayArr[3].day, 'PAR_TEXT_BOX_DAYS_DETECT5': _self.dayArr[4].day, 'PAR_TEXT_BOX_DAYS_DETECT6': _self.dayArr[5].day, 'PAR_TEXT_BOX_DAYS_DETECT7': _self.dayArr[6].day, 'PAR_TEXT_BOX_DAYS_DETECT8': _self.dayArr[7].day, 'PAR_TEXT_BOX_DAYS_DETECT9': _self.dayArr[9].day, 'PAR_TEXT_BOX_DAYS_DETECT10': _self.dayArr[9].day, 'PAR_TEXT_BOX_DAYS_DETECT11': _self.dayArr[10].day, 'PAR_TEXT_BOX_DAYS_DETECT12': _self.dayArr[11].day, 'PAR_TEXT_BOX_DAYS_DETECT13': _self.dayArr[12].day, 'PAR_TEXT_BOX_DAYS_DETECT14': _self.dayArr[13].day, 'PAR_TEXT_BOX_DAYS_DETECT15': _self.dayArr[14].day, 'PAR_TEXT_BOX_DAYS_DETECT16': _self.dayArr[15].day, 'PAR_TEXT_BOX_DAYS_DETECT17': _self.dayArr[16].day, 'PAR_TEXT_BOX_DAYS_DETECT18': _self.dayArr[17].day, 'PAR_TEXT_BOX_DAYS_DETECT19': _self.dayArr[18].day, 'PAR_TEXT_BOX_DAYS_DETECT20': _self.dayArr[19].day, 'PAR_TEXT_BOX_DAYS_DETECT21': _self.dayArr[20].day},
+          dataType: 'json',
+          success: function (res) {
+            if (_self.daterangeVal[0] !== undefined) {
+              _self.exStDate = _self.daterangeVal[0]
+              _self.exEnDate = _self.daterangeVal[1]
+            }
+            _self.datas = res
+            _self.tableTh = res[0]
+            _self.chartDatas = res.slice(0, (res.length - 1))
+            _self.$nextTick(function () {
+              _self.drawChart(_self.chartDatas)
+            })
+            _self.loadFlag = false
+            _self.tableFlag = true
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  .laber-info{
+    width: 40%;
+    font-weight:700;
+    text-align: center;
+  }
+  .laber-input{
+    border: 1px solid #b5bbc8;
+    width: 60%;
+  }
+</style>

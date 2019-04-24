@@ -1,0 +1,13 @@
+<template>
+
+</template>
+
+<script>
+    export default {
+      name: 'swine-report02'
+    }
+</script>
+
+<style scoped>
+
+</style>

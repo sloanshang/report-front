@@ -1,0 +1,97 @@
+<template>
+  <div class="content-wrapper" style="margin-left:0">
+    <section class="content">
+      <div class="row">
+        <!--给下面的div增加v-show="menu.isShow" 可以实现权限-->
+        <div class="col-sm-12 col-md-12"  v-for="menu in menus">
+          <div class="box box-info box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{menu.group}}</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-footer no-padding">
+              <ul class="nav nav-pills nav-stacked">
+                <li v-for="item in menu.links">
+                  <!--给下面的div增加 v-show = "item.isAllow" 可以实现权限-->
+                  <router-link :to="item.link"  style="text-align: left;">
+                    <i class="fa fa-circle-o " :class="{'text-yellow': item.link != '#'}"></i>
+                    {{item.title}}
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        menus: [
+          {
+            group: '报表',
+            links: [
+              {
+                title: '1.Closeout Report(结栏报告报表)',
+                link: '/growerReport01/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '2.Expenses(收支报表)',
+                link: '/growerReport02/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '3.Pig Movements(猪只转移报表)',
+                link: '/growerReport03/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '4.Feed Deliveries By Date(猪舍饲料接收报表)',
+                link: '/growerReport04/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '5.Feed Budget(猪舍饲料预算报表)（暂时不开发)',
+                link: '/growerReport05/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '6.Feed Diet Summary(饲料总结报表)',
+                link: '/growerReport06/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '7.Deaths(猪只死亡报表)',
+                link: '/growerReport07/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '8.Inventory Summary & Pig Days(猪场库存报表)',
+                link: '/growerReport08/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '9.Kill Sheet(屠宰报表)（暂时不开发）',
+                link: '/growerReport09/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '10.Group History(历史记录报表)',
+                link: '/growerReport10/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '11.Treatments(兽医报表)',
+                link: '/growerReport11/' + this.orgCode + '/' + this.farmOrg
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+</script>
+

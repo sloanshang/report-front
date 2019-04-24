@@ -1,0 +1,93 @@
+<template>
+    <div class="container bs-docs-container">
+      <div class="row">
+        <div class="col-md-9" role="main" data-toggle="sidenav"
+             data-container="#sidenav" data-hs="h1,h2"
+             data-smart-id="true" data-bottom=".bs-docs-footer">
+          <div>
+            <h1>饲料总结报表</h1>
+          </div>
+          <div class="bootstrap-table">
+            search 框等
+          </div>
+          <div class="fixed-table-container">
+            <div class="fixed-table-header" v-show="device=='M'">
+              表头
+            </div>
+            <div class="fixed-table-body" style="min-height: 600px">
+              内容
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</template>
+
+<script>
+import BootstrapTable from 'bootstrap-table'
+import Cmghre001 from '@/components/cm/ghre001'
+import jQuery from 'jquery'
+export default {
+  name: 'growerReport01',
+  components: {
+    BootstrapTable,
+    Cmghre001
+  },
+  mounted () {
+//    判断设备给不同的样式
+    this.browserRedirect()
+    var _self = this
+    jQuery.ajax({
+      url: '/grower/grower6Test',
+      type: 'POST',
+      contentType: 'application/json',
+      dataType: 'json',
+      success: function (res) {
+        _self.tableData01 = res
+        console.log(11111111)
+        console.log(res)
+        // window.location.reload()
+      },
+      fail: function (e) {
+        console.log('查询失败')
+      }
+    })
+  },
+  data () {
+    return {
+      device: 'M',
+      'tableData01': [{itemID: 1, itemName: 'ItemName1', itemValue: 'itemValue1'},
+       {itemID: 2, itemName: 'ItemName2', itemValue: 'itemValue2'},
+        {itemID: 3, itemName: '13', itemValue: '33'},
+        {itemID: 2, itemName: 'ItemName2', itemValue: 'itemValue2'},
+        {itemID: 2, itemName: 'ItemName2', itemValue: 'itemValue2'},
+        {itemID: 2, itemName: 'ItemName2', itemValue: 'itemValue2'}
+      ]
+    }
+  },
+  methods: {
+    browserRedirect () {
+      var sUserAgent = navigator.userAgent.toLowerCase()
+      var bIsIpad = sUserAgent.match(/ipad/i) === 'ipad'
+      var bIsIphoneOs = sUserAgent.match(/iphone os/i) === 'iphone os'
+      var bIsMidp = sUserAgent.match(/midp/i) === 'midp'
+      var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) === 'rv:1.2.3.4'
+      var bIsUc = sUserAgent.match(/ucweb/i) === 'ucweb'
+      var bIsAndroid = sUserAgent.match(/android/i) === 'android'
+      var bIsCE = sUserAgent.match(/windows ce/i) === 'windows ce'
+      var bIsWM = sUserAgent.match(/windows mobile/i) === 'windows mobile'
+      //   console.log("您的浏览设备为：") if phone true,if pc false
+      if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+        console.log('m')
+        this.device = 'M'
+      } else {
+        console.log('pc')
+        this.device = 'PC'
+      }
+    },
+    getReport () {
+    }
+  }
+}
+</script>

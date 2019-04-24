@@ -1,0 +1,42 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+// import HelloWorld from '@/components/HelloWorld'
+import GrowerReport01 from '@/components/grower/GrowerReport01'
+import GrowerReport06 from '@/components/grower/GrowerReport06'
+import Cmsmst001 from '@/components/cm/smst001'
+import Test01 from '@/components/test/test01'
+
+Vue.use(Router)
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      redirect: '/cmsmst001'
+    },
+    {
+      path: '/cmsmst001',
+      name: 'Cmsmst001',
+      component: Cmsmst001,
+      props: true,
+      meta: {
+        backToMain: true
+      }
+    },
+    {
+      path: '/growerReport01',
+      name: 'GrowerReport01',
+      component: GrowerReport01
+    },
+    {
+      path: '/growerReport06',
+      name: 'GrowerReport06',
+      component: GrowerReport06
+    },
+    {
+      path: '/test01',
+      name: 'Test01',
+      component: Test01
+    }
+  ]
+})

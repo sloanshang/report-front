@@ -1,0 +1,315 @@
+<template>
+  <div class="row" style="padding-top: 55px;background-color: #fff;">
+    <form class="form">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">管理农场: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">配种组: </div>
+            <select class="form-control" style="width: 45%" onclick="getStartGroup">
+              <option>--请选择--</option>
+
+            </select>
+            <span class="form-control" style="padding: 5px 0;width: 10%;text-align: center;border: none;">到</span>
+            <select class="form-control" style="width: 45%">
+              <option>--请选择--</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">开始日期： </div>
+            <div class="form-control" style="padding: 0;border: none;">
+              <dtre001></dtre001>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">结束日期： </div>
+            <div class="form-control" style="padding: 0;border: none;">
+              <dtre002></dtre002>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary">查询</button>&nbsp;
+          <button type="button" class="btn btn-primary">导出excel</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <div style="padding: 0 25px;">
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr>
+          <th>配种组 </th>
+          <th>配种组期间 </th>
+          <th>配种数量 </th>
+          <th>返情数量</th>
+          <th>空怀数量|怀孕|检查</th>
+          <th>流产数量</th>
+          <th>Found|open</th>
+          <th>其他|淘汰数量</th>
+          <th>配准数|怀孕的</th>
+          <th>配准率|怀孕的</th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+        </tr>
+        <tr>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+        <tr>
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> 配种组 </span>
+                <span class="value"> a </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种组期间 </span>
+                <span class="value"> b </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种数量 </span>
+                <span class="value"> c </span>
+              </div>
+              <div class="card-view">
+                <span class="title">返情数量</span>
+                <span class="value">d</span>
+              </div>
+              <div class="card-view">
+                <span class="title">空怀数量|怀孕|检查</span>
+                <span class="value">e</span>
+              </div>
+              <div class="card-view">
+                <span class="title">流产数量</span>
+                <span class="value">f</span>
+              </div>
+              <div class="card-view">
+                <span class="title">其他|淘汰数量</span>
+                <span class="value">g</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准数|怀孕的</span>
+                <span class="value">h</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准率|怀孕的</span>
+                <span class="value">h</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> 配种组 </span>
+                <span class="value"> a </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种组期间 </span>
+                <span class="value"> b </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种数量 </span>
+                <span class="value"> c </span>
+              </div>
+              <div class="card-view">
+                <span class="title">返情数量</span>
+                <span class="value">d</span>
+              </div>
+              <div class="card-view">
+                <span class="title">空怀数量|怀孕|检查</span>
+                <span class="value">e</span>
+              </div>
+              <div class="card-view">
+                <span class="title">流产数量</span>
+                <span class="value">f</span>
+              </div>
+              <div class="card-view">
+                <span class="title">其他|淘汰数量</span>
+                <span class="value">g</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准数|怀孕的</span>
+                <span class="value">h</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准率|怀孕的</span>
+                <span class="value">h</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> 配种组 </span>
+                <span class="value"> a </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种组期间 </span>
+                <span class="value"> b </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种数量 </span>
+                <span class="value"> c </span>
+              </div>
+              <div class="card-view">
+                <span class="title">返情数量</span>
+                <span class="value">d</span>
+              </div>
+              <div class="card-view">
+                <span class="title">空怀数量|怀孕|检查</span>
+                <span class="value">e</span>
+              </div>
+              <div class="card-view">
+                <span class="title">流产数量</span>
+                <span class="value">f</span>
+              </div>
+              <div class="card-view">
+                <span class="title">其他|淘汰数量</span>
+                <span class="value">g</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准数|怀孕的</span>
+                <span class="value">h</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准率|怀孕的</span>
+                <span class="value">h</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  import jQuery from 'jquery'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-report08',
+    components: {
+      Dtre001,
+      Dtre002
+    },
+    data () {
+      return {
+        up: true,
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        datas: [],
+        startGroup: '',
+        endGroup: '',
+        groupList: ''
+      }
+    },
+    created: function () {
+      var _self = this
+      _self.getWeekYearly()
+    },
+    methods: {
+      getWeekYearly () {
+        var _self = this
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/getWeekYearly',
+          type: 'GET',
+          //  contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            console.log(res)
+            _self.groupList = res
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      },
+      down () {
+        this.up = !this.up
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+</style>

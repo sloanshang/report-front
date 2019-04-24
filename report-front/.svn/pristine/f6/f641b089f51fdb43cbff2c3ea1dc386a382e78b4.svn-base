@@ -1,0 +1,69 @@
+<template>
+  <div class="content-wrapper" style="margin-left:0">
+    <section class="content">
+      <div class="row">
+        <!--给下面的div增加v-show="menu.isShow" 可以实现权限-->
+        <div class="col-sm-6 col-md-6"  v-for="menu in menus">
+          <div class="box box-info box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{menu.group}}</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-footer no-padding">
+              <ul class="nav nav-pills nav-stacked">
+                <li v-for="item in menu.links">
+                  <!--给下面的div增加 v-show = "item.isAllow" 可以实现权限-->
+                  <router-link :to="item.link" class="col-sm-6 col-md-6">
+                    <i class="fa fa-circle-o " :class="{'text-yellow': item.link != '#'}"></i>
+                    {{item.title}}
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+  export default {
+    data () {
+      return {
+        menus: [
+          {
+            group: '报表',
+            links: [
+              {
+                title: '报表1',
+                link: '/report01'
+              },
+              {
+                title: '报表2',
+                link: '/report01'
+              }
+            ]
+          },
+          {
+            group: 'B',
+            links: [
+              {
+                title: '报表1',
+                link: '/report01'
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+</script>
+

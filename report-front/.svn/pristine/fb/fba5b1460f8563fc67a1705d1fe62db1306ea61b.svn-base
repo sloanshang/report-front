@@ -1,0 +1,47 @@
+<template>
+  <el-select v-model="value6" placeholder="TOTAL" @change="getVariety">
+    <el-option :disabled="true" :value="null">
+      <span style="float: left;font-weight: bold">禽别&nbsp;&nbsp;</span>
+      <span style="float: right; color: #8492a6; font-size: 13px; font-weight: bold"> 禽别名称&nbsp;</span>
+    </el-option>
+    <el-option v-for="item in res" :key="item.productid" :label="item.productname" v-bind:value="item.productid">
+      <span style="float: left; color: #8492a6; font-size: 13px">{{ item.productid }}</span>
+      <span style="float: right">{{ item.productname }}</span>
+    </el-option>
+  </el-select>
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        res: [],
+        value6: ''
+      }
+    },
+    mounted () {
+      var _self = this
+      jQuery.ajax({
+        url: '/standard/breedType',
+        type: 'GET',
+        contentType: 'application/json',
+        // dataType: 'json',
+        success: function (res) {
+          _self.res = res
+        }
+      })
+    },
+    methods: {
+      getVariety (item) {
+        var _self = this
+        _self.$emit('getVariety', item)
+      }
+    }
+  }
+</script>
+
+<style>
+
+</style>

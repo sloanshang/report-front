@@ -1,0 +1,268 @@
+<template>
+  <div class="row" style="padding-top: 55px;padding-bottom:55px;min-height:550px;background-color: #fff;">
+    <form class="form">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">管理农场: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">配种组: </div>
+            <div class="form-control" style="width: 45%;padding: 0;">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getStartGroup"></weekse001>
+            </div>
+            <span class="form-control" style="padding: 5px 0;width: 10%;text-align: center;border: none;">到</span>
+            <div class="form-control" style="width: 45%;padding: 0;">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getEndGroup"></weekse001>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">开始日期： </div>
+            <div class="form-control" style="padding: 0;">
+              <el-input placeholder="请输入内容"  v-model="startDate" :disabled="true"> </el-input>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">结束日期： </div>
+            <div class="form-control" style="padding: 0;">
+              <el-input placeholder="请输入内容"  v-model="endDate" :disabled="true"> </el-input>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="openWarning">查询</button>&nbsp;
+          <button type="button" class="btn btn-primary">导出excel</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-show="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-show="tableFlag" style="padding: 0 25px;">
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr>
+          <th>配种组 </th>
+          <th>配种组期间 </th>
+          <th>配种数量 </th>
+          <th>返情数量</th>
+          <th>空怀数量<br>怀孕检查</th>
+          <th>流产数量</th>
+          <th>Found<br>open</th>
+          <th>死亡数量</th>
+          <th>其他<br>淘汰数量</th>
+          <th>未怀孕</th>
+          <th>配准数<br>怀孕的</th>
+          <th>配准率<br>怀孕的</th>
+          <th>预产期 </th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr v-for="data in datas">
+          <td>{{data.mate_group}}</td>
+          <td>{{data.mate_date}}</td>
+          <td>{{data.mate_number}}</td>
+          <td>{{data.count_abort_type3}}</td>
+          <td>{{data.count_abort_type2}}</td>
+          <td>{{data.count_abort_type1}}</td>
+          <td>{{data.column_avg_03}}</td>
+          <td>{{data.count_dead_type}}</td>
+          <td>{{data.count_cull_type}}</td>
+          <td>{{data.non_farrow_number}}</td>
+          <td>{{data.mate_farrow_number}}</td>
+          <td>{{data.mate_farrow_rate}}%</td>
+          <td>{{data.farrow_date}}</td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+        <tr v-for="data in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> 配种组 </span>
+                <span class="value"> {{data.mate_group}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种组期间 </span>
+                <span class="value"> {{data.mate_date}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种数量 </span>
+                <span class="value"> {{data.mate_number}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title">返情数量</span>
+                <span class="value">{{data.count_abort_type3}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">空怀数量|怀孕|检查</span>
+                <span class="value">{{data.count_abort_type2}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">流产数量</span>
+                <span class="value">{{data.count_abort_type1}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">Found<br>open</span>
+                <span class="value">{{data.column_avg_03}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">死亡数量</span>
+                <span class="value">{{data.count_dead_type}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">其他|淘汰数量</span>
+                <span class="value">{{data.count_cull_type}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">未怀孕</span>
+                <span class="value">{{data.non_farrow_number}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准数|怀孕的</span>
+                <span class="value">{{data.mate_farrow_number}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">配准率|怀孕的</span>
+                <span class="value">{{data.mate_farrow_rate}}%</span>
+              </div>
+              <div class="card-view">
+                <span class="title">预产期</span>
+                <span class="value">{{data.farrow_date}}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+  import Weekse001 from '@/components/cm/weekse001'
+  import jQuery from 'jquery'
+  import vueLoading from 'vue-loading-template'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-Report05',
+    components: {
+      Weekse001,
+      vueLoading
+    },
+    data () {
+      return {
+        up: true,
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        datas: [],
+        startGroup: '',
+        endGroup: '',
+        groupList: '',
+        startDate: '',
+        endDate: ''
+      }
+    },
+    methods: {
+      down () {
+        this.up = !this.up
+      },
+      getStartGroup (d) {
+        this.startDate = d.weekStartDate
+      },
+      getEndGroup (d) {
+        this.endDate = d.weekEndDate
+      },
+      openWarning () {
+        var _self = this
+        if (_self.startDate > _self.endDate) {
+          _self.$notify.error({
+            title: '警告',
+            message: '选择的查询区段有误,请核实！',
+            type: 'warning',
+            position: 'top-right'
+          })
+        } else if (_self.startDate === '' || _self.endDate === '') {
+          _self.$notify.error({
+            title: '警告',
+            message: '配种组不可以为空！',
+            type: 'warning',
+            position: 'top-right'
+          })
+        } else {
+          _self.doSearch()
+        }
+      },
+      doSearch () {
+        var _self = this
+        _self.datas = ''
+        _self.tableFlag = false
+        _self.loadFlag = true
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report5',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'startDate': _self.startDate, 'endDate': _self.endDate},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            _self.loadFlag = false
+            _self.farmName = res[0].farm_name_loc
+            _self.tableFlag = true
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+</style>

@@ -1,0 +1,402 @@
+<template>
+  <div class="content-wrapper" style="min-height: 700px;margin-bottom: 50px;padding:0 15px;">
+    <Cmghre001 :orgCode="orgCode"  :farmOrg="farmOrg" v-on:getData="getData"></Cmghre001>
+    <div>
+      <div style="position: relative;height: 50px">
+        <h1 style="font-size: 1.5em;text-align: center;">猪只转移报表</h1>
+        <div style="float: right;">
+          <select style="width:60px;height: 30px;">
+            <option>excel</option>
+            <option>pdf</option>
+          </select>
+          <button class="btn btn-primary">导出</button>
+        </div>
+      </div>
+      <div class="boxTable">
+        <h2>{{tableData01.descLoc}}</h2>
+      <table class="table table-hover table-striped" >
+        <thead>
+        <tr v-show="device=='PC'" >
+          <th rowspan="2">转入时间</th>
+          <th rowspan="2">实施时间</th>
+          <th rowspan="2">转入猪只单据号</th>
+          <th rowspan="2">事项</th>
+          <th rowspan="2">本批次转入头数</th>
+          <th rowspan="2">重量</th>
+          <th colspan="3" style="text-align: center">FROM</th>
+        </tr>
+        <tr v-show="device=='PC'" >
+          <th>来源</th>
+          <th>数量</th>
+          <th>重量</th>
+        </tr>
+        </thead>
+        <tbody v-if="device=='PC'">
+        <tr v-for="(p1, index) in tableData01.datas">
+          <td>{{p1.VAL01}}</td>
+          <td>{{p1.VAL02}}</td>
+          <td>{{p1.VAL03}}</td>
+          <td>{{p1.VAL04}}</td>
+          <td>{{p1.VAL05}}</td>
+          <td>{{p1.VAL06}}</td>
+          <td>{{p1.VAL07}}</td>
+          <td>{{p1.VAL08}}</td>
+          <td>{{p1.VAL09}}</td>
+        </tr>
+
+        </tbody>
+        <tbody v-else="">
+        <tr v-for="(p1, index) in tableData01.datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title" style="">转入时间</span>
+                <span class="value">{{p1.VAL01}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">实施时间</span>
+                <span class="value">{{p1.VAL02}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">转入猪只单据号</span>
+                <span class="value">{{p1.VAL03}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">事项</span>
+                <span class="value">{{p1.VAL04}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">本批次转入头数</span>
+                <span class="value">{{p1.VAL05}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">重量</span>
+                <span class="value">{{p1.VAL06}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">来源</span>
+                <span class="value">{{p1.VAL07}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">数量</span>
+                <span class="value">{{p1.VAL08}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">重量</span>
+                <span class="value">{{p1.VAL09}}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="boxTable">
+        <h2>{{tableData02.descLoc}}</h2>
+        <table class="table table-hover table-striped" >
+          <thead>
+          <tr v-show="device=='PC'" >
+            <th rowspan="2">转入时间</th>
+            <th rowspan="2">实施时间</th>
+            <th rowspan="2">转出猪只单据号</th>
+            <th rowspan="2">事项</th>
+            <th rowspan="2">本批次转出头数</th>
+            <th rowspan="2">重量</th>
+            <th colspan="3" style="text-align: center">TO</th>
+          </tr>
+          <tr v-show="device=='PC'" >
+            <th>来源</th>
+            <th>数量</th>
+            <th>重量</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr v-for="(p1, index) in tableData02.datas">
+            <td>{{p1.VAL01}}</td>
+            <td>{{p1.VAL02}}</td>
+            <td>{{p1.VAL03}}</td>
+            <td>{{p1.VAL04}}</td>
+            <td>{{p1.VAL05}}</td>
+            <td>{{p1.VAL06}}</td>
+            <td>{{p1.VAL07}}</td>
+            <td>{{p1.VAL08}}</td>
+            <td>{{p1.VAL09}}</td>
+          </tr>
+
+          </tbody>
+          <tbody v-else="">
+          <tr v-for="(p1, index) in tableData02.datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">转出时间</span>
+                  <span class="value">{{p1.VAL01}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">实施时间</span>
+                  <span class="value">{{p1.VAL02}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">转出猪只单据号</span>
+                  <span class="value">{{p1.VAL03}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">事项</span>
+                  <span class="value">{{p1.VAL04}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">本批次转出头数</span>
+                  <span class="value">{{p1.VAL05}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">重量</span>
+                  <span class="value">{{p1.VAL06}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">来源</span>
+                  <span class="value">{{p1.VAL07}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">{{p1.VAL08}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">重量</span>
+                  <span class="value">{{p1.VAL09}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="boxTable">
+        <h2>{{tableData03.descLoc}}</h2>
+        <table class="table table-hover table-striped" >
+          <thead>
+          <tr v-show="device=='PC'" >
+            <th rowspan="2">死亡时间</th>
+            <th rowspan="2">实施时间</th>
+            <th rowspan="2">死亡猪只单据号</th>
+            <th rowspan="2">事项</th>
+            <th rowspan="2">死亡头数</th>
+            <th rowspan="2">重量</th>
+            <th colspan="2" style="text-align: center">TO</th>
+          </tr>
+          <tr v-show="device=='PC'" >
+            <th>数量</th>
+            <th>重量</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr v-for="(p1, index) in tableData03.datas">
+            <td>{{p1.VAL01}}</td>
+            <td>{{p1.VAL02}}</td>
+            <td>{{p1.VAL03}}</td>
+            <td>{{p1.VAL04}}</td>
+            <td>{{p1.VAL05}}</td>
+            <td>{{p1.VAL06}}</td>
+            <td>{{p1.VAL07}}</td>
+            <td>{{p1.VAL08}}</td>
+          </tr>
+
+          </tbody>
+          <tbody v-else="">
+          <tr v-for="(p1, index) in tableData03.datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">死亡时间</span>
+                  <span class="value">{{p1.VAL01}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">实施时间</span>
+                  <span class="value">{{p1.VAL02}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">死亡猪只单据号</span>
+                  <span class="value">{{p1.VAL03}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">事项</span>
+                  <span class="value">{{p1.VAL04}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">死亡头数</span>
+                  <span class="value">{{p1.VAL05}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">重量</span>
+                  <span class="value">{{p1.VAL06}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">{{p1.VAL07}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">重量</span>
+                  <span class="value">{{p1.VAL08}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="boxTable">
+        <h2>{{tableData04.descLoc}}</h2>
+        <table class="table table-hover table-striped" >
+          <thead>
+          <tr v-show="device=='PC'" >
+            <th rowspan="2">项目</th>
+            <th colspan="2"style="text-align: center">进猪</th>
+            <th colspan="2" style="text-align: center">出猪</th>
+          </tr>
+          <tr v-show="device=='PC'" >
+            <th>数量</th>
+            <th>重量</th>
+            <th>数量</th>
+            <th>重量</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr v-for="(p1, index) in tableData04.datas">
+            <td>{{p1.VAL01}}</td>
+            <td>{{p1.VAL02}}</td>
+            <td>{{p1.VAL03}}</td>
+            <td>{{p1.VAL04}}</td>
+            <td>{{p1.VAL05}}</td>
+          </tr>
+
+          </tbody>
+          <tbody v-else="">
+          <tr v-for="(p1, index) in tableData04.datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">项目</span>
+                  <span class="value">{{p1.VAL01}}</span>
+                </div>
+                <div class="card-view">
+                  <div>
+                    <span class="title" style="">进猪数量</span>
+                    <span class="value">{{p1.VAL02}}</span>
+                  </div>
+                  <div>
+                    <span class="title" style="">进猪重量</span>
+                    <span class="value">{{p1.VAL03}}</span>
+                  </div>
+                </div>
+                <div class="card-view">
+                  <div>
+                    <span class="title" style="">出猪数量</span>
+                    <span class="value">{{p1.VAL04}}</span>
+                  </div>
+                  <div>
+                    <span class="title" style="">出猪重量</span>
+                    <span class="value">{{p1.VAL05}}</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</template>
+
+<script>
+  import BootstrapTable from 'bootstrap-table'
+  import Cmghre001 from '@/components/cm/ghre001'
+  import jQuery from 'jquery'
+  export default {
+    name: 'growerReport01',
+    components: {
+      BootstrapTable,
+      Cmghre001
+    },
+    props: ['orgCode', 'farmOrg', 'device'],
+    mounted () {
+      this.getData()
+    },
+    data () {
+      return {
+        tableData01: [],
+        tableData02: [],
+        tableData03: [],
+        tableData04: []
+      }
+    },
+    methods: {
+//    获取表格数据
+      getData (batch) {
+        var _self = this
+        jQuery.ajax({
+          url: 'grower/report/SWFN0103/query',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({'orgCode': _self.orgCode, 'farmOrg': _self.farmOrg, 'flock': batch}),
+          dataType: 'json',
+          success: function (res) {
+            console.log(res)
+            _self.tableData01 = res.datas[1001]
+            _self.tableData02 = res.datas[1002]
+            _self.tableData03 = res.datas[1003]
+            _self.tableData04 = res.datas[1004]
+            console.log(_self.tableData01)
+          },
+          fail: function (e) {
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+<style>
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+  .table tbody:nth-child(2){
+    /*border-top:2px solid #3c8dbc;*/
+  }
+  h2{
+    font-size: 1.2em;
+    margin: 5px;
+    color: #3c8dbc;
+    font-weight:700;
+  }
+  .boxTable{
+    margin-bottom: 15px;
+  }
+</style>

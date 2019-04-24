@@ -1,0 +1,624 @@
+﻿<template>
+  <div class="content-wrapper" style="min-height: 700px;margin-bottom: 50px;padding:0 15px;">
+    <Cmghre001 :orgCode="orgCode"  :farmOrg="farmOrg" v-on:getData="getData"></Cmghre001>
+    <div>
+      <!--标题1-->
+      <div>
+        <h1 style="font-size: 1.5em;text-align: center;">结栏报告报表</h1>
+        <div style="float: right;">
+          <select style="width:60px;height: 30px;">
+            <option>excel</option>
+            <option>pdf</option>
+          </select>
+          <button class="btn btn-primary">导出</button>
+        </div>
+      </div>
+      <!--批次概述表格-->
+      <div class="boxTable">
+        <h2>批次概述</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <tbody v-if="device =='PC'">
+            <tr>
+              <td>{{flockSum01.name}}</td>
+              <td>{{flockSum01.value}}</td>
+              <td>{{flockSum02.name}}</td>
+              <td>{{flockSum02.value}}</td>
+              <td>{{flockSum03.name}}</td>
+              <td>{{flockSum03.value}}</td>
+            </tr>
+            <tr>
+              <td>{{flockSum04.name}}</td>
+              <td>{{flockSum04.value}}</td>
+              <td>{{flockSum05.name}}</td>
+              <td>{{flockSum05.value}}</td>
+              <td>{{flockSum06.name}}</td>
+              <td>{{flockSum06.value}}</td>
+            </tr>
+            <tr>
+              <td>{{flockSum07.name}}</td>
+              <td>{{flockSum07.value}}</td>
+              <td>{{flockSum08.name}}</td>
+              <td>{{flockSum08.value}}</td>
+              <td>{{flockSum09.name}}</td>
+              <td>{{flockSum09.value}}</td>
+            </tr>
+            <tr>
+              <td>{{flockSum10.name}}</td>
+              <td>{{flockSum10.value}}</td>
+              <td>{{flockSum11.name}}</td>
+              <td>{{flockSum09.value}}</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title">{{flockSum01.name}}</span>
+                  <span class="value">{{flockSum01.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum02.name}}</span>
+                  <span class="value">{{flockSum02.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum03.name}}</span>
+                  <span class="value">{{flockSum03.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum04.name}}</span>
+                  <span class="value">{{flockSum04.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum05.name}}</span>
+                  <span class="value">{{flockSum05.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum06.name}}</span>
+                  <span class="value">{{flockSum06.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum07.name}}</span>
+                  <span class="value">{{flockSum07.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum08.name}}</span>
+                  <span class="value">{{flockSum08.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum09.name}}</span>
+                  <span class="value">{{flockSum09.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum10.name}}</span>
+                  <span class="value">{{flockSum10.value}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title">{{flockSum11.name}}</span>
+                  <span class="value">{{flockSum11.value}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--进猪综述-->
+      <div class="boxTable">
+        <h2>{{tableData02.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead  v-show="device=='PC'">
+          <tr>
+            <th>项目</th>
+            <th>猪只来源</th>
+            <th>数量</th>
+            <th>占比</th>
+            <th>总重</th>
+            <th>均重</th>
+            <th>平均进场日龄</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr v-for="data in tableData02.datas">
+              <td>{{data.VAL01}}</td>
+              <td>{{data.VAL02}}</td>
+              <td>{{data.VAL03}}</td>
+              <td>{{data.VAL04}}</td>
+              <td>{{data.VAL05}}</td>
+              <td>{{data.VAL06}}</td>
+              <td>{{data.VAL07}}</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr v-for="data in tableData02.datas">
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">{{data.VAL01}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">猪只来源</span>
+                    <span class="value">{{data.VAL02}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">数量</span>
+                    <span class="value">{{data.VAL03}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">占比</span>
+                    <span class="value">{{data.VAL04}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">总重</span>
+                    <span class="value">{{data.VAL05}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">均重</span>
+                    <span class="value">{{data.VAL06}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">平均进场日龄</span>
+                    <span class="value">{{data.VAL06}}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--出猪综述-->
+      <div class="boxTable">
+        <h2>{{tableData03.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>出猪方式</th>
+            <th>猪只来源</th>
+            <th>数量</th>
+            <th>占比</th>
+            <th>总重</th>
+            <th>均重</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr v-for="data in tableData03.datas">
+              <td>{{data.VAL01}}</td>
+              <td>{{data.VAL02}}</td>
+              <td>{{data.VAL03}}</td>
+              <td>{{data.VAL04}}</td>
+              <td>{{data.VAL05}}</td>
+              <td>{{data.VAL06}}</td>
+          </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr  v-for="data in tableData03.datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">出猪方式</span>
+                  <span class="value">{{data.VAL01}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">猪只来源</span>
+                  <span class="value">{{data.VAL02}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">{{data.VAL03}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">占比</span>
+                  <span class="value">{{data.VAL04}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总重</span>
+                  <span class="value">{{data.VAL05}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">均重</span>
+                  <span class="value">{{data.VAL06}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--总损失-->
+      <div class="boxTable">
+        <h2>{{tableData04.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>项目</th>
+            <th>数量</th>
+            <th>占比</th>
+            <th>总重</th>
+            <th>均重</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr v-for="data in tableData04.datas">
+              <td>{{data.VAL01}}</td>
+              <td>{{data.VAL02}}</td>
+              <td>{{data.VAL03}}</td>
+              <td>{{data.VAL04}}</td>
+              <td>{{data.VAL05}}</td>
+          </tr>
+          </tbody>
+          <tbody v-else="">
+          <tr  v-for="data in tableData04.datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">项目</span>
+                  <span class="value">{{data.VAL01}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">{{data.VAL02}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">占比</span>
+                  <span class="value">{{data.VAL03}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总重</span>
+                  <span class="value">{{data.VAL04}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">均重</span>
+                  <span class="value">{{data.VAL05}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--性能-->
+      <div class="boxTable">
+        <h2>{{tableData05.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+          <tr v-show="device =='PC'">
+            <th>项目</th>
+            <th>包括死猪</th>
+            <th>不包括死猪</th>
+          </tr>
+          </thead>
+          <tbody v-if="device =='PC'">
+            <tr v-for="data in tableData05.datas">
+              <td>{{data.VAL01}}</td>
+              <td>{{data.VAL02}}</td>
+              <td>{{data.VAL03}}</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr v-for="data in tableData05.datas">
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">{{data.VAL01}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">{{data.VAL02}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">{{data.VAL03}}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--项目-->
+      <div class="boxTable">
+        <h2>{{tableData06.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+            <tr v-show="device=='PC'">
+              <th>项目</th>
+              <th>值</th>
+            </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr v-for="data in tableData06.datas">
+              <td>{{data.VAL01}}</td>
+              <td>{{data.VAL02}}</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr v-for="data in tableData06.datas">
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">{{data.VAL01}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">值</span>
+                    <span class="value">{{data.VAL02}}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--饲料成本-->
+      <div class="boxTable">
+        <h2>{{tableData07.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+            <tr v-show="device=='PC'">
+            <th>项目</th>
+            <th>饲料组成</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr v-for="feeds in tableData07.datas">
+              <td>{{feeds.VAL01}}</td>
+              <td>{{feeds.VAL02}}</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr v-for="data in tableData07.datas">
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">{{data.VAL01}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">饲料组成</span>
+                    <span class="value">{{data.VAL02}}</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">总饲喂量每吨价格</span>
+                    <span class="value">{{data.VAL03}}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--P & L 总结 -->
+      <div class="boxTable">
+        <h2>{{tableData08.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+            <tr v-show="device=='PC'">
+            <th>收入</th>
+            <th>总金额</th>
+            <th>人民币/每头售猪</th>
+            <th>人民币/每头产出猪</th>
+            <th>人民币/每公斤售猪</th>
+            <th>人民币/每公斤产猪</th>
+            <th>人民币/每百公斤售猪</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr v-for="data in tableData08.datas">
+              <td>{{data.VAL01}}</td>
+              <td>{{data.VAL02}}</td>
+              <td>{{data.VAL03}}</td>
+              <td>{{data.VAL04}}</td>
+              <td>{{data.VAL05}}</td>
+              <td>{{data.VAL06}}</td>
+              <td>{{data.VAL07}}</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">售商品猪</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">总金额</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每头售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每公斤售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每公斤产猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每百公斤售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每百公斤售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">总收入</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">总金额</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每头售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每公斤售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每公斤产猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每百公斤售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">人民币/每百公斤售猪</span>
+                    <span class="value">1255</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</template>
+
+<script>
+  import BootstrapTable from 'bootstrap-table'
+  import Cmghre001 from '@/components/cm/ghre001'
+  import jQuery from 'jquery'
+  export default {
+    name: 'growerReport01',
+    components: {
+      BootstrapTable,
+      Cmghre001
+    },
+    props: ['orgCode', 'farmOrg', 'device'],
+    data () {
+      return {
+        flockSum01: {},
+        flockSum02: {},
+        flockSum03: {},
+        flockSum04: {},
+        flockSum05: {},
+        flockSum06: {},
+        flockSum07: {},
+        flockSum08: {},
+        flockSum09: {},
+        flockSum10: {},
+        flockSum11: {},
+        tableData02: [],
+        tableData03: [],
+        tableData04: [],
+        tableData05: [],
+        tableData06: [],
+        tableData07: [],
+        tableData08: []
+      }
+    },
+    mounted () {
+      this.getData()
+    },
+    methods: {
+//    获取表格数据
+      getData () {
+        var _self = this
+        jQuery.ajax({
+          url: 'grower/report/SWFN0101/query',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({'orgCode': _self.orgCode, 'farmOrg': _self.farmOrg}),
+          dataType: 'json',
+          success: function (res) {
+            console.log('第一个表的结果如下：')
+            console.log(res)
+            _self.flockSum01.name = res.datas['1001.01'].descLoc
+            _self.flockSum02.name = res.datas['1001.02'].descLoc
+            _self.flockSum03.name = res.datas['1001.03'].descLoc
+            _self.flockSum04.name = res.datas['1001.04'].descLoc
+            _self.flockSum05.name = res.datas['1001.05'].descLoc
+            _self.flockSum06.name = res.datas['1001.06'].descLoc
+            _self.flockSum07.name = res.datas['1001.07'].descLoc
+            _self.flockSum08.name = res.datas['1001.08'].descLoc
+            _self.flockSum09.name = res.datas['1001.09'].descLoc
+            _self.flockSum10.name = res.datas['1001.10'].descLoc
+            _self.flockSum11.name = res.datas['1001.11'].descLoc
+            _self.flockSum01.value = res.datas['1001.01'].datas[0].VAL_STR
+            _self.flockSum02.value = res.datas['1001.02'].datas[0].VAL
+            _self.flockSum03.value = res.datas['1001.03'].datas[0].VAL_STR
+            _self.flockSum04.value = res.datas['1001.04'].datas[0].VAL_STR
+            _self.flockSum05.value = res.datas['1001.05'].datas[0].VAL_STR
+            _self.flockSum06.value = res.datas['1001.06'].datas[0].VAL_STR
+            _self.flockSum07.value = res.datas['1001.07'].datas[0].VAL_STR
+            _self.flockSum08.value = res.datas['1001.08'].datas[0].VAL
+            _self.flockSum09.value = res.datas['1001.09'].datas[0].VAL_STR
+            _self.flockSum10.value = res.datas['1001.10'].datas[0].VAL_STR
+            _self.flockSum11.value = res.datas['1001.11'].datas[0].VAL
+            _self.tableData02 = res.datas[1002]
+            _self.tableData03 = res.datas[1003]
+            _self.tableData04 = res.datas[1004]
+            _self.tableData05 = res.datas[1005]
+            _self.tableData06 = res.datas[1006]
+            _self.tableData07 = res.datas[1007]
+            _self.tableData08 = res.datas[1008]
+          },
+          fail: function (e) {
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+<style>
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+  .table tbody:nth-child(2){
+    /*border-top:2px solid #3c8dbc;*/
+  }
+  h2{
+    font-size: 1.2em;
+    margin: 5px;
+    color: #3c8dbc;
+    font-weight:700;
+  }
+  .boxTable{
+    margin-bottom: 15px;
+  }
+</style>

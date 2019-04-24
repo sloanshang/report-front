@@ -1,0 +1,111 @@
+<template>
+    <div class="row clearfix">
+      <div class="col-md-12 column"  style="margin: 10px">
+        <div class="row clearfix">
+          <div class="col-md-3 column">
+            <div class="input-group" style="padding-bottom: 2px">
+              <span class="input-group-addon">农场：</span>
+              <input  class="form-control" type="text" name="text" v-bind:value="orgCode + ' ' + farmOrg " readonly size="12" maxlength="50" laceholder="twitterhandle">
+            </div>
+          </div>
+          <div class="col-md-3 column">
+            <dtre002 :date="beginDate"  style="float:left; padding-right:2px" v-on:changeDate="doChangeStart"/>
+          </div>
+          <div class="col-md-3 column">
+            <dtre002 :date="endDate" style="float:left; padding-right:2px" v-on:changeDate="doChangeEnd"/>
+          </div>
+          <div class="col-md-3 column">
+            <div class="input-group" style="float:left;padding-right:2px" >
+              <span class="input-group-addon">批次：</span>
+              <!--<input  class="form-control" type="text" name="text" v-bind:value="batch"-->
+                      <!--size="12" maxlength="50" laceholder="twitterhandle">-->
+              <select class="form-control"  v-on:change="doBatch($event)">
+                <option  class="test" v-for="fl in flock"  v-bind:value="fl.FARM_ORG">{{fl.FARM_ORG}}</option>
+              </select>
+              <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"@click="doSearch" >查询</button>
+                </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</template>
+<script>
+  import Dtre002 from '@/components/cm/dtre002'
+  import jQuery from 'jquery'
+
+  export default {
+    props: ['orgCode', 'farmOrg', 'begin', 'end', 'autoSearch'],
+    components: {
+      Dtre002
+    },
+    data () {
+      var beginDate = new Date()
+      beginDate.setDate(1) // 本月的第一天
+      return {
+        'beginDate': beginDate,
+        'endDate': this.end || new Date(),
+        'flock': [],
+        'batch': ''
+      }
+    },
+    created () {
+      console.log(this.orgCode + this.farmOrg)
+    },
+    mounted () {
+      console.log('mounted')
+      if (this.autoSearch === true) {
+        this.doSearch()
+      }
+      console.log(222222)
+      console.log(this.beginDate, this.endDate)
+      this.doFlockSearch()
+    },
+    methods: {
+      doChangeStart (d) {
+//        console.log('changeStart to ' + d)
+        this.beginDate = d
+        this.$emit('update:begin', d)
+        this.doFlockSearch()
+      },
+      doChangeEnd (d) {
+//        console.log('changeEnd to ' + d)
+        this.endDate = d
+        this.$emit('update:end', d)
+        this.doFlockSearch()
+      },
+      // 通过日期查询批次
+      doFlockSearch () {
+        var _self = this
+        jQuery.ajax({
+          url: 'grower/report/SWFN/query',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({'orgCode': _self.orgCode, 'farmOrg': _self.farmOrg, 'dateStart': _self.beginDate, 'dateEnd': _self.endDate}),
+          dataType: 'json',
+          success: function (res) {
+            _self.flock = res.datas[9001.01].datas
+          },
+          fail: function (e) {
+            console.log('查询失败')
+          }
+        })
+      },
+      doBatch (event) {
+        var _self = this
+        _self.batch = event.target.value
+        alert(_self.batch)
+        console.log(_self.batch)
+      },
+      /* 查询该页面表格信息 */
+      doSearch () {
+//        console.log('doBatchSearch' + this.batch)
+        var _self = this
+        console.log('---------------------')
+        console.log(this.beginDate)
+        this.$emit('getData', _self.batch, _self.beginDate, _self.endDate)
+      }
+    }
+  }
+</script>

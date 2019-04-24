@@ -1,0 +1,113 @@
+<template>
+  <div class="content-wrapper" style="margin-left:0">
+    <section class="content">
+      <div class="row">
+        <!--给下面的div增加v-show="menu.isShow" 可以实现权限-->
+        <div class="col-sm-12 col-md-12"  v-for="menu in menus">
+          <div class="box box-info box-solid" style="margin-bottom: 70px">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{menu.group}}</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-footer no-padding">
+              <ul class="nav nav-pills nav-stacked">
+                <li v-for="item in menu.links">
+                  <!--给下面的div增加 v-show = "item.isAllow" 可以实现权限-->
+                  <router-link :to="item.link"  style="text-align: left;">
+                    <i class="fa fa-circle-o " :class="{'text-yellow': item.link != '#'}"></i>
+                    {{item.title}}
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        menus: [
+          {
+            group: this.$t('message.SwineReport'),
+            links: [
+              {
+                title: '1.' + this.$t('message.titleSwineReport01'),
+                link: '/swineReport01/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '2.' + this.$t('message.titleSwineReport02'),
+                link: '/swineReport02/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '3.' + this.$t('message.titleSwineReport03'),
+                link: '/swineReport03/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '4.' + this.$t('message.titleSwineReport04'),
+                link: '/swineReport04/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '5.' + this.$t('message.titleSwineReport05'),
+                link: '/swineReport05/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '6.' + this.$t('message.titleSwineReport06'),
+                link: '/swineReport06/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '7.' + this.$t('message.titleSwineReport07'),
+                link: '/swineReport07/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '8.' + this.$t('message.titleSwineReport08'),
+                link: '/swineReport08/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '9.' + this.$t('message.titleSwineReport09'),
+                link: '/swineReport09/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '11.' + this.$t('message.titleSwineReport11'),
+                link: '/swineReport11/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '12.' + this.$t('message.titleSwineReport12'),
+                link: '/swineReport12/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '13.' + this.$t('message.titleSwineReport13'),
+                link: '/swineReport13/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '14.' + this.$t('message.titleSwineReport14'),
+                link: '/swineReport14/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '15.' + this.$t('message.titleSwineReport15'),
+                link: '/swineReport15/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '16.' + this.$t('message.titleSwineReport16'),
+                link: '/swineReport16/' + this.orgCode + '/' + this.farmOrg
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+</script>
+

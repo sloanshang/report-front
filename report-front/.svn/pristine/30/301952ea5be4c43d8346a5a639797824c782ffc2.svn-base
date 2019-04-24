@@ -1,0 +1,54 @@
+<template>
+  <div style="height:50px; background:#ecf0f5">
+    <footer class="main-footer"
+            style="position:fixed; margin-left:0px; bottom:0px; width:100%;padding:3px;background-color:#0e90d2">
+
+      <div>
+        <div class="col-xs-1" style="text-align:center"> </div>
+        <div class="col-xs-2" style="text-align:center">
+          <img style="width: 24px;height: 24px" src="../../assets/inputRecord.png"/><br>
+          <font color="white" size="2">录入</font>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <a :href="reportUrl">
+            <img style="width: 24px;height: 24px" src="../../assets/ReportModule.png"/><br>
+            <font color="white" size="2">报表</font>
+          </a>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <img style="width: 24px;height: 24px" src="../../assets/Icon-Zhuguanli1.png"/><br>
+          <font color="white" size="2">管理</font>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <a href="/main/index">
+            <img style="width: 24px;height: 24px" src="../../assets/xuanchang.png"/><br>
+            <font color="white" size="2">{{$t('menu.footer.selectFarm')}}</font>
+          </a>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <img style="width: 24px;height: 24px" src="../../assets/Icon-WoDe1.png"/><br>
+          <font color="white" size="2">我的</font>
+        </div>
+
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'VFooter',
+    computed: {
+      moduleUrl () {
+        var params = this.$route.params
+        return params.orgCode + '/' + params.farmOrg
+      },
+      reportUrl () {
+        return '/report/' + this.moduleUrl + '/index'
+      },
+      backToMainUrl () {
+        return '/main/' + this.moduleUrl + '/module'
+      }
+    }
+  }
+</script>

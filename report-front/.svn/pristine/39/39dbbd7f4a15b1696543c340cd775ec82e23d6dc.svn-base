@@ -1,0 +1,856 @@
+﻿<template>
+  <div class="content-wrapper" style="min-height: 610px;margin-bottom: 50px;padding:0 15px;">
+    <Cmghre001></Cmghre001>
+    <div>
+      <!--标题1-->
+      <div style="overflow: hidden;">
+        <h1 style="font-size: 1.5em;text-align: center;">结栏报告报表</h1>
+        <div style="float: right;">
+          <select style="width:60px;height: 30px;">
+            <option>excel</option>
+            <option>pdf</option>
+          </select>
+          <button class="btn btn-primary">导出</button>
+        </div>
+      </div>
+      <!--批次概述表格-->
+      <div class="boxTable">
+        <h2>批次概述</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>FeedCode</th>
+            <th>FeedName</th>
+            <th>InvoiceDate</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr v-for="(p1, index) in tableData01">
+            <td>{{p1.itemID}}</td>
+            <td>{{p1.itemName}}</td>
+            <td>{{p1.itemValue}}</td>
+          </tr>
+
+          </tbody>
+          <tbody v-else="">
+          <tr  v-for="(p1, index) in tableData01">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">feedCode</span>
+                  <span class="value">{{p1.itemID}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">FeedName</span>
+                  <span class="value">{{p1.itemName}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">invoiceDate</span>
+                  <span class="value">{{p1.itemValue}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--进猪综述-->
+      <div class="boxTable">
+        <h2>进猪综述</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead  v-show="device=='PC'">
+          <tr>
+            <th>项目</th>
+            <th>猪只来源</th>
+            <th>数量</th>
+            <th>占比</th>
+            <th>总重</th>
+            <th>均重</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr>
+            <td>转入断奶猪</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>转入其他时期猪只</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>汇总</td>
+            <td></td>
+            <td>200</td>
+            <td>100%</td>
+            <td>2</td>
+            <td>20</td>
+          </tr>
+          </tbody>
+          <tbody v-else="">
+          <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">项目</span>
+                  <span class="value">转入断奶猪</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">猪只来源</span>
+                  <span class="value">--</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">300</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">占比</span>
+                  <span class="value">400</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总重</span>
+                  <span class="value">10</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">均重</span>
+                  <span class="value">200</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">平均进场日龄</span>
+                  <span class="value">16</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">项目</span>
+                  <span class="value">汇总</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">猪只来源</span>
+                  <span class="value">--</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">300</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">占比</span>
+                  <span class="value">400</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总重</span>
+                  <span class="value">10</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">均重</span>
+                  <span class="value">200</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">平均进场日龄</span>
+                  <span class="value">16</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--出猪综述-->
+      <div class="boxTable">
+        <h2>出猪综述</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>出猪方式</th>
+            <th>猪只来源</th>
+            <th>数量</th>
+            <th>占比</th>
+            <th>总重</th>
+            <th>均重</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr>
+            <td>死亡</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>售成年种猪</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>售仔猪</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>售体重较轻商品猪</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>售商品猪</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>转出</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>汇总</td>
+            <td></td>
+            <td>200</td>
+            <td>100%</td>
+            <td>2</td>
+            <td>20</td>
+          </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr  v-for="(p1, index) in tableData01">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">出猪方式</span>
+                  <span class="value">死亡</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">猪只来源</span>
+                  <span class="value">---</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">111</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">占比</span>
+                  <span class="value">80%</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总重</span>
+                  <span class="value">100</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">均重</span>
+                  <span class="value">100</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--总损失-->
+      <div class="boxTable">
+        <h2>总损失</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>项目</th>
+            <th>数量</th>
+            <th>占比</th>
+            <th>总重</th>
+            <th>均重</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr>
+            <td>校正</td>
+            <td></td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>死亡</td>
+            <td>4</td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>汇总</td>
+            <td>0</td>
+            <td>100</td>
+            <td>100%</td>
+            <td>1</td>
+          </tr>
+          </tbody>
+          <tbody v-else="">
+          <tr  v-for="(p1, index) in tableData01">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">出猪方式</span>
+                  <span class="value">死亡</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">猪只来源</span>
+                  <span class="value">---</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">111</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">占比</span>
+                  <span class="value">80%</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总重</span>
+                  <span class="value">100</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">均重</span>
+                  <span class="value">100</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--性能-->
+      <div class="boxTable">
+        <h2>性能</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>项目</th>
+            <th>包括死猪</th>
+            <th>不包括死猪</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr>
+              <td>售猪数量</td>
+              <td>550</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>售猪总重</td>
+              <td>500</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>售猪净重</td>
+              <td>100</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>平均售商品猪重量</td>
+              <td>500</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>平均售猪重量</td>
+              <td>85</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>产出猪数量</td>
+              <td>15</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>总的产出猪重量</td>
+              <td>56</td>
+              <td>3</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">售猪数量</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">售猪总量</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">售猪净重</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">平均售商品猪重量</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--项目-->
+      <div class="boxTable">
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+            <tr v-show="device=='PC'">
+              <th>项目</th>
+              <th>值</th>
+            </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr>
+              <td>进场猪只数</td>
+              <td>550</td>
+            </tr>
+            <tr>
+              <td>开始总重</td>
+              <td>500</td>
+            </tr>
+            <tr>
+              <td>平均猪只的开始重量</td>
+              <td>1.5</td>
+            </tr>
+            <tr>
+              <td>总占用场时间</td>
+              <td> 82,056</td>
+            </tr>
+            <tr>
+              <td>总饲养天数</td>
+              <td>147</td>
+            </tr>
+            <tr>
+              <td>实际总的天数</td>
+              <td>15</td>
+            </tr>
+            <tr>
+              <td>每年轮转次数</td>
+              <td>56</td>
+            </tr>
+            <tr>
+              <td>平均每头猪的在场天数</td>
+              <td>56</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">售猪数量</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">售猪总量</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">售猪净重</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">平均售商品猪重量</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">包含死猪</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">不包含死猪</span>
+                    <span class="value">12</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--饲料成本-->
+      <div class="boxTable">
+        <h2>饲料成本</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+          <thead>
+            <tr v-show="device=='PC'">
+            <th>项目</th>
+            <th>饲料组成</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+            <tr>
+              <td>数量</td>
+              <td>550</td>
+            </tr>
+            <tr>
+              <td>总饲喂量每吨价格</td>
+              <td>500</td>
+            </tr>
+          </tbody>
+          <tbody v-else="">
+            <tr>
+              <td>
+                <div class="card-views">
+                  <div class="card-view">
+                    <span class="title" style="">项目</span>
+                    <span class="value">数量</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">饲料组成</span>
+                    <span class="value">100</span>
+                  </div>
+                  <div class="card-view">
+                    <span class="title" style="">总饲喂量每吨价格</span>
+                    <span class="value">123</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="boxTable">
+      <h2>P & L 总结 </h2>
+      <table class="table table-hover table-striped" style="margin-bottom: 10px;">
+        <thead>
+        <tr v-show="device=='PC'">
+          <th>收入</th>
+          <th>总金额</th>
+          <th>人民币/每头售猪</th>
+          <th>人民币/每头产出猪</th>
+          <th>人民币/每公斤售猪</th>
+          <th>人民币/每公斤产猪</th>
+          <th>人民币/每百公斤售猪</th>
+          <th>人民币/每百公斤售猪</th>
+        </tr>
+        </thead>
+        <tbody v-if="device=='PC'">
+        <tr>
+          <td>售商品猪</td>
+          <td>100</td>
+          <td>100</td>
+          <td>200</td>
+          <td>50</td>
+          <td>50</td>
+          <td>50</td>
+          <td>50</td>
+        </tr>
+        <tr>
+          <td>售出栏轻的猪</td>
+          <td>1.5</td>
+          <td>1.5</td>
+          <td>1.5</td>
+          <td>1.5</td>
+          <td>1.5</td>
+          <td>1.5</td>
+          <td>1.5</td>
+        </tr>
+        <tr>
+          <td>售成年种猪</td>
+          <td> 82,056</td>
+          <td> 82,056</td>
+          <td> 82,056</td>
+          <td> 82,056</td>
+          <td> 82,056</td>
+          <td> 82,056</td>
+          <td> 82,056</td>
+        </tr>
+        <tr>
+          <td>售仔猪</td>
+          <td>147</td>
+          <td>147</td>
+          <td>147</td>
+          <td>147</td>
+          <td>147</td>
+          <td>147</td>
+          <td>147</td>
+        </tr>
+        <tr>
+          <td>总收入</td>
+          <td>15</td>
+          <td>15</td>
+          <td>15</td>
+          <td>15</td>
+          <td>15</td>
+          <td>15</td>
+          <td>15</td>
+        </tr>
+        </tbody>
+        <tbody v-else="">
+          <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">项目</span>
+                  <span class="value">售商品猪</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总金额</span>
+                  <span class="value">100</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每头售猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每公斤售猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每公斤产猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每百公斤售猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每百公斤售猪</span>
+                  <span class="value">1255</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">项目</span>
+                  <span class="value">总收入</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">总金额</span>
+                  <span class="value">100</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每头售猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每公斤售猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每公斤产猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每百公斤售猪</span>
+                  <span class="value">1255</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">人民币/每百公斤售猪</span>
+                  <span class="value">1255</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</template>
+
+<script>
+  import BootstrapTable from 'bootstrap-table'
+  import Cmghre001 from '@/components/cm/ghre001'
+  import jQuery from 'jquery'
+  export default {
+    name: 'growerReport01',
+    components: {
+      BootstrapTable,
+      Cmghre001
+    },
+    props: ['orgCode', 'farmOrg', 'device'],
+    data () {
+      return {
+        tableData01: []
+      }
+    },
+    mounted () {
+      this.getData()
+    },
+    methods: {
+//    获取表格数据
+      getData () {
+        var _self = this
+        jQuery.ajax({
+          url: '/grower/grower1Test',
+          type: 'POST',
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            _self.tableData01 = res
+            // window.location.reload()
+          },
+          fail: function (e) {
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+<style>
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+  .table tbody:nth-child(2){
+    /*border-top:2px solid #3c8dbc;*/
+  }
+  h2{
+    font-size: 1.2em;
+    margin: 5px;
+    color: #3c8dbc;
+    font-weight:700;
+  }
+  .boxTable{
+    margin-bottom: 15px;
+  }
+</style>

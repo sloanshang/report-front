@@ -1,0 +1,262 @@
+<template>
+  <div class="row" style="padding-top: 55px;background-color:#fff;">
+    <form class="form">
+      <div v-show="!up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">管理农场: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <!--查询的日期范围-->
+        <div class="form-group col-xs-12 col-sm-6" v-show="device=='M'">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">查询日期: </div>
+            <div class="form-control" style="padding: 0;height: auto;">
+              <dtre001 :date="beginDate"  style="float:left; padding-right:2px" v-on:changeDate="doChangeStart"/>
+              <div  style="text-align: center;border: none;">到</div>
+              <dtre002 :date="endDate" style="float:left; padding-right:2px" v-on:changeDate="doChangeEnd"/>
+            </div>
+            <div class="input-group-addon" style="padding: 0;">
+              <select style="" v-model='selectLoc'>
+                <option v-for="par in parLocation" v-bind:value="par.value">{{par.value}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!--pc端查询日期-->
+        <div class="form-group col-xs-12 col-sm-6" v-show="device=='PC'">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">查询日期: </div>
+            <div class="form-control" style="width: 45%;padding: 0;border: none;">
+              <dtre001 :date="beginDate"  style="float:left; padding-right:2px" v-on:changeDate="doChangeStart"/>
+            </div>
+            <span class="form-control" style="padding: 5px 0;width: 10%;text-align: center;line-height: 24px">到</span>
+            <div class="form-control" style="width: 45%;padding: 0;border: none;">
+              <dtre002 :date="endDate" style="float:left; padding-right:2px" v-on:changeDate="doChangeEnd"/>
+            </div>
+            <div class="input-group-addon" style="padding: 0;">
+              <select style="" v-model='selectLoc'>
+                <option v-for="par in parLocation" v-bind:value="par.value">{{par.value}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">查询</button>&nbsp;
+          <button type="button" class="btn btn-primary">导出excel</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" v-show="!up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" v-show="up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-if="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-if="tableFlag" style="padding: 0 15px;">
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr>
+          <th rowspan="2">序号 </th>
+          <th rowspan="2">日期 </th>
+          <th rowspan="2">猪只代码 </th>
+          <th rowspan="2">胎次 </th>
+          <th colspan="2" style="text-align: center">淘汰 </th>
+          <th rowspan="2">淘汰状态 </th>
+          <th rowspan="2">品种 </th>
+          <th rowspan="2">入场时间 </th>
+          <th rowspan="2">所在农场 </th>
+          <th rowspan="2">舍 </th>
+        </tr>
+        <tr>
+          <th>淘汰类型 </th>
+          <th>淘汰原因 </th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr  v-for="(data,index) in datas">
+          <td>{{index}}</td>
+          <td>{{data.transaction_date}}</td>
+          <td>{{data.swine_track}}</td>
+          <td>{{data.parity}}</td>
+          <td>{{data.oubound_name_loc}}</td>
+          <td>{{data.reason_name_loc}}</td>
+          <td>{{data.last_activity_type}}</td>
+          <td>{{data.breeder}}</td>
+          <td>{{data.trn_in_activity_date}}</td>
+          <td>{{data.transfer_in_farm_org_loc}}</td>
+          <td>{{data.atbirth_farm_org_loc}}</td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+        <tr v-for="(data,index) in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> 序号 </span>
+                <span class="value"> {{index}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 日期 </span>
+                <span class="value"> {{data.transaction_date}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 猪只代码 </span>
+                <span class="value"> {{data.swine_track}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 胎次 </span>
+                <span class="value"> {{data.parity}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 淘汰 </span>
+                <span class="value"> 淘汰类型 </span>
+                <span class="value"> {{data.oubound_name_loc}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title">  </span>
+                <span class="value"> 淘汰原因 </span>
+                <span class="value"> {{data.reason_name_loc}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 淘汰状态 </span>
+                <span class="value"> {{data.last_activity_type}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 品种 </span>
+                <span class="value">{{data.breeder}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 入场时间 </span>
+                <span class="value"> {{data.trn_in_activity_date}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 所在农场 </span>
+                <span class="value"> {{data.transfer_in_farm_org_loc}}< </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 舍 </span>
+                <span class="value"> {{data.atbirth_farm_org_loc}} </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  import {formatDate} from '@/components/utils/date'
+  import vueLoading from 'vue-loading-template'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-Report11',
+    components: {
+      Dtre001,
+      Dtre002,
+      vueLoading
+    },
+    data () {
+      return {
+        farmName: this.orgCode + '#' + this.farmOrg,
+        up: false,
+        loadFlag: false,
+        tableFlag: false,
+        datas: [],
+        beginDate: '',
+        endDate: '',
+        selectLoc: 'ALL',
+        parLocation: [
+          {
+            value: 'ALL'
+          },
+          {
+            value: 'LOC6'
+          },
+          {
+            value: 'LOC1'
+          }
+        ]
+      }
+    },
+    filters: {
+      formatDate (time) {
+        let date = new Date(time)
+        return formatDate(date, 'yyyy-MM-dd')
+      }
+    },
+    methods: {
+      doChangeStart (d) {
+        console.log('changeStart to ' + d)
+        this.beginDate = d
+        this.beginDate = formatDate(this.beginDate, 'yyyy-MM-dd')
+      },
+      doChangeEnd (d) {
+        console.log('changeEnd to ' + d)
+        this.endDate = d
+        this.endDate = formatDate(this.endDate, 'yyyy-MM-dd')
+      },
+      down () {
+        this.up = !this.up
+      },
+      doSearch () {
+        var _self = this
+        _self.loadFlag = true
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report11',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'startDate': _self.beginDate, 'endDate': _self.endDate, 'parLocation': _self.selectLoc},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            _self.loadFlag = false
+            _self.farmName = res[0].farm_name_loc
+            _self.tableFlag = true
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+</style>

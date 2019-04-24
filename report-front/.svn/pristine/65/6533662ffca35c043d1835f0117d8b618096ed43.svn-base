@@ -1,0 +1,30 @@
+<template>
+  <div id="app">
+    <v-header />
+    <router-view/>
+    <v-footer />
+  </div>
+</template>
+
+<script>
+  import VHeader from '@/components/layout/VHeader'
+  import VFooter from '@/components/layout/VFooter'
+
+  export default {
+    name: 'app',
+    components: {
+      VHeader,
+      VFooter
+    }
+  }
+</script>
+
+<style>
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+  }
+</style>

@@ -1,0 +1,84 @@
+﻿<template>
+  <div class="content-wrapper" style="min-height:600px;">
+    肥猪结栏报表
+    <table  
+            data-toggle="table"   
+            data-search="true"
+            data-show-refresh="true"
+            data-show-toggle="true"
+            data-show-columns="true"
+            data-halign="left" 
+            class="table table-hover"
+            >
+      <thead>
+          <tr>
+              <th>Item ID</th>
+              <th>Item Name</th>
+              <th>Item Price</th>
+          </tr>
+      </thead>
+      <tbody>
+        
+          <tr  v-for="(p1, index) in tableData01" :key="index">
+              <td style="text-align:right;color:red !important">{{p1.itemID}}---</td>
+              <td data-align="left" >{{p1.itemName}}</td>
+              <td data-align="left" >{{p1.itemValue}}</td>
+          </tr>
+      </tbody>
+    </table>
+
+    <table id="test"></table>
+    <input  type="button" value="测试" @click="testBootStrap" >
+  </div>
+</template>
+
+<script>
+// import BootstrapTable from 'bootstrap-table'
+import jQuery from 'jquery'
+export default {
+  name: 'growerReport01',
+  components: {
+   //  BootstrapTable
+  },
+  created () {
+    this.initData()
+    this.testBootStrap()
+  },
+  methods: {
+    initData () {
+      this.tableData01 = [{itemID: 1, itemName: 'ItemName1', itemValue: 'itemValue1'},
+       {itemID: 2, itemName: 'ItemName2', itemValue: 'itemValue2'}
+      ]
+    },
+    testBootStrap () {
+      jQuery('#test').bootstrapTable({
+        method: 'get',
+        url: 'grower/growerTest',
+        columns: [{
+          field: 'itemID',
+          title: 'itemID',
+          align: 'center',
+          valign: 'middle'
+        },
+        {
+          field: 'itemName',
+          title: '上级菜单ID',
+          align: 'center',
+          valign: 'middle'
+        },
+        {
+          field: 'itemValue',
+          title: '菜单名称',
+          align: 'center',
+          valign: 'middle'
+        }]
+      })
+    }
+  },
+  data () {
+    return {
+      'tableData01': null
+    }
+  }
+}
+</script>

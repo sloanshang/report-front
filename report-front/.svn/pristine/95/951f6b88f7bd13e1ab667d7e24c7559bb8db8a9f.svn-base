@@ -1,0 +1,178 @@
+<template>
+  <div class="row" style="padding-top: 55px;background-color: #fff;">
+    <form class="form">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">管理农场: </div>
+            <select class="form-control">
+              <option>08-0-0</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">品种： </div>
+            <select class="form-control">
+              <option>08-0-0</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon" v-show="device=='PC'">截止日期： </div>
+            <div class="form-control" style="padding: 0;border: none;">
+              <dtre002></dtre002>
+            </div>
+            <div class="input-group-addon">
+              <input type="radio" name="EndDate">周
+              <input type="radio" name="EndDate">月
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <span class="input-group-addon" >后退周次： </span>
+            <span class="input-group-addon" v-show="false">后退月数： </span>
+            <input type="number" class="form-control" min="0" max="12" />
+            <span class="input-group-addon">周</span>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <span class="input-group-addon" >胎次最大值： </span>
+            <input type="number" class="form-control" min="0" max="12" />
+          </div>
+        </div>
+
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary">查询</button>&nbsp;
+          <button type="button" class="btn btn-primary">导出excel</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <div style="padding: 0 25px;">
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr>
+          <th>按时间分析 </th>
+          <th>累计</th>
+          <th>平均值 </th>
+          <th>目标值</th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+        </tr>
+        <tr>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+        <tr>
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title">按时间分析</span>
+                <span class="value"> a </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 累计 </span>
+                <span class="value"> b </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 平均值 </span>
+                <span class="value"> c </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 目标值 </span>
+                <span class="value">d</span>
+              </div>
+
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  export default {
+    props: ['device'],
+    name: 'swine-Report05',
+    components: {
+      Dtre001,
+      Dtre002
+    },
+    data () {
+      return {
+        up: true,
+        device: 'PC'
+      }
+    },
+    methods: {
+      down () {
+        this.up = !this.up
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+</style>

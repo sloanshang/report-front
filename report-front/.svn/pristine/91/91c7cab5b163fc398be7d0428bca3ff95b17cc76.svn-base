@@ -1,0 +1,27 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+import Report01 from '@/components/swine/Report01'
+import Cmsmst001 from '@/components/cm/smst001'
+Vue.use(Router)
+console.log('>>> index.js')
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      redirect: '/cmsmst001'
+    },
+    {
+      path: '/report01',
+      name: 'Report01',
+      component: Report01
+    },
+    {
+      path: '/cmsmst001',
+      name: '肥猪报表',
+      component: Cmsmst001,
+      meta: {
+        backToMain: true
+      }
+    }
+  ]
+})

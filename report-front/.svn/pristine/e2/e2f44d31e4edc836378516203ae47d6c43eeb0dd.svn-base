@@ -1,0 +1,272 @@
+<template>
+  <div class="row" id="pdfDom" style="padding-top: 55px;background-color: #fff;">
+    <form class="form" style="overflow: hidden;">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.farm')}}: </div>
+            <input class="form-control" readonly v-model="farmName" />
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.periodLength')}}: </div>
+            <div class="form-control" style="padding: 0; bottom: 0px">
+              <el-input-number  style="width: 100%;" size="small":min="0"v-model="days"></el-input-number>
+            </div>
+            <div class="input-group-addon">{{$t('swineReport.days')}}</div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-12">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.state')}}：</div>
+            <div class="form-control" style="height: auto;">
+              <div class="col-xs-6 col-sm-3 col-md-2" style="padding: 0"><input type="checkbox" class="laber-input"  v-model="allData.parCheck" @change="allSelect()"/><label class="laber-info">{{$t('swineReport.all')}}</label></div>
+              <div v-for="item in checkData">
+                <div class="col-xs-6 col-sm-3 col-md-2" style="padding: 0">
+                  <input type="radio" class="laber-input" :name="item.value" :checked="item.isCheck"  :value="item.value" @change="singleSelect(item)"/><label class="laber-info">{{item.name}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">{{$t('swineReport.search')}}</button>&nbsp;
+          <button type="button" class="btn btn-primary">{{$t('swineReport.export')}} Excel</button>&nbsp;
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('swineReport.export')}} PDF</button>
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-if="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div style="padding: 0 25px;" v-if="tableFlag">
+      <h4 style="text-align: center">{{$t('message.titleSwineReport14')}}</h4>
+      <div style="padding-bottom: 4px"><el-tag size="small ">{{$t('swineReport.farm')}}:{{tableTh.farm_org}}&nbsp;{{tableTh.farm_name_loc}}</el-tag><el-tag size="small ">{{$t('swineReport.printTime')}}:{{tableTh.printReportTime}}</el-tag></div>
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr>
+          <th rowspan="2">{{$t('swineReport.no')}} </th>
+          <th rowspan="2">{{$t('swineReport.id')}} </th>
+          <th rowspan="2">{{$t('swineReport.parity')}} </th>
+          <th colspan="2" style="text-align: center">{{$t('swineReport.lastStatus')}} </th>
+          <th colspan="2" style="text-align: center">{{$t('swineReport.actual')}} </th>
+          <th rowspan="2">{{$t('swineReport.birthDate')}} </th>
+          <th rowspan="2">{{$t('swineReport.days')}} </th>
+          <th rowspan="2">{{$t('swineReport.notes')}} </th>
+        </tr>
+        <tr>
+          <th>{{$t('swineReport.status')}} </th>
+          <th>{{$t('swineReport.date')}} </th>
+          <th>{{$t('swineReport.status')}} </th>
+          <th>{{$t('swineReport.date')}} </th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr  v-for="(data, index) in datas">
+          <td>{{index + 1}}</td>
+          <td>{{data.swine_track}}</td>
+          <td>{{data.litno1}}</td>
+          <td>{{data.last_activity_type}}</td>
+          <td>{{data.last_activity_date}}</td>
+          <td>{{data.activity_type}}</td>
+          <td>{{data.activity_date}}</td>
+          <td>{{data.birth_date}}</td>
+          <td>{{data.date_diff}}</td>
+          <td></td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+        <tr v-for="(data,index) in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.no')}} </span>
+                <span class="value"> {{index + 1}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.id')}} </span>
+                <span class="value"> {{data.swine_track}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.parity')}} </span>
+                <span class="value"> {{data.litno1}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.lastStatus')}} </span>
+                <span class="value"> {{$t('swineReport.status')}} </span>
+                <span class="value"> {{data.last_activity_type}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> </span>
+                <span class="value"> {{$t('swineReport.date')}} </span>
+                <span class="value"> {{data.last_activity_date}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.actual')}} </span>
+                <span class="value"> {{$t('swineReport.status')}} </span>
+                <span class="value"> {{data.activity_type}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> </span>
+                <span class="value"> {{$t('swineReport.date')}} </span>
+                <span class="value"> {{data.activity_date}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.birthDate')}} </span>
+                <span class="value"> {{data.birth_date}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.days')}} </span>
+                <span class="value"> {{data.date_diff}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.notes')}} </span>
+                <span class="value"> / </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  import vueLoading from 'vue-loading-template'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-Report-14',
+    components: {
+      vueLoading
+    },
+    data () {
+      return {
+        up: true,
+        days: 7,
+        datas: [],
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        serviceType: '',
+        allData: {
+          parCheck: true,
+          value: 'ALL',
+          text: '全选'
+        },
+        checkData: [{
+          id: '1',
+          name: this.$t('swineReport.swineGilt'),
+          value: 'G',
+          isCheck: false
+        }, {
+          id: '2',
+          name: this.$t('swineReport.swineWean'),
+          value: 'W',
+          isCheck: false
+        }, {
+          id: '3',
+          name: this.$t('swineReport.swineAbort'),
+          value: 'A',
+          isCheck: false
+        }],
+        htmlTitle: this.$t('message.titleSwineReport14'),
+        tableTh: ''
+      }
+    },
+    mounted () {
+      this.allSelect()
+    },
+    methods: {
+      down () {
+        this.up = !this.up
+      },
+      allSelect () {
+        var vm = this
+        vm.checkData.forEach(item => {
+          item.isCheck = vm.allData.parCheck
+        })
+        if (vm.allData.parCheck === true) {
+          vm.serviceType = vm.allData.value
+        } else {
+          vm.checkData[0].isCheck = true
+          vm.serviceType = vm.checkData[0].value
+        }
+      },
+      singleSelect (item) {
+        var vm = this
+        vm.checkData.forEach(data => {
+          data.isCheck = false
+        })
+        item.isCheck = true
+        vm.serviceType = item.value
+      },
+      doSearch () {
+        var _self = this
+        _self.datas = ''
+        _self.tableFlag = false
+        _self.loadFlag = true
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report14',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'serviceType': _self.serviceType, 'days': _self.days},
+          dataType: 'json',
+          success: function (res) {
+            console.log(res)
+            _self.datas = res
+            _self.tableTh = res[0]
+            _self.loadFlag = false
+            _self.tableFlag = true
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  .laber-info{
+    width: 60%;
+    font-weight:700;
+    text-align: left;
+    padding-left:5px;
+  }
+  .laber-input{
+    /*border: 1px solid #b5bbc8;*/
+  }
+</style>

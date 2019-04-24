@@ -1,0 +1,326 @@
+<template>
+  <header class="main-header">
+    <nav class="navbar navbar-static-top" style="margin:0">
+      <header  class="navbar-header" style="width: 100%;" >
+        <div class="navbar-custom-menu" style="width:100%">
+          <ul class="nav navbar-nav pull-left" style="font-size:1.8rem;">
+            <li>
+              <!-- 跳回ifarm-web系统的主界面 -->
+              <a :href="backToMainUrl" v-if="backToMain"><i class="fa fa-arrow-left"></i></a>
+              <!-- 返回上一个页面 -->
+              <a @click="back" v-else><i class="fa fa-arrow-left"></i></a>
+            </li>
+            <li><a id="path" style="padding: 15px 5px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{path}}</a></li>
+          </ul>
+          <!--小屏幕-->
+          <div class="nav navbar-nav navbar-right hidden-sm  hidden-md hidden-lg">
+            <button @click="showList" class="btn btn-success hidden-sm hidden-md hidden-lg" style="border: none;float: right;margin: 10px;">
+              <span class="glyphicon glyphicon-align-justify visible-sm- hidden-md- hidden-lg-"></span>
+            </button>
+            <ul id="mylist" v-show="show" style="position:absolute;top: 50px; right: 0;background-color:#3C8DBC;width: 100%;color: #fff;padding: 0 20px;">
+              <!--用户信息-->
+              <li class="hovered">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false" style="display: block;width: 100%;padding: 10px;">
+                  <span class="glyphicon glyphicon-user" style="font-size: 1rem;"></span> {{$t('message.UserInfo')}} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" style="top: 43px;left: 0;color: #000;background-color:#fff;">
+                  <span class="glyphicon glyphicon-triangle-top" style="color: #fff;position: absolute;top: 30px;left: 45px;"></span>
+                  <li><a href="javascript:;">
+                    <span class="keyname">userName：</span>
+                    <span class="keyvalue">{{userRealName}}</span></a></li>
+                  <li><a href="javascript:;">
+                    <span class="keyname">programId :</span>
+                    <span class="keyvalue">{{programId}}</span></a></li>
+                  <li><a href="javascript:;">
+                    <span class="keyname">orgCode：</span>
+                    <span class="keyvalue">{{farmInfo.orgCode}}</span></a></li>
+                  <li><a href="javascript:;">
+                    <span class="keyname">farmOrg：</span>
+                    <span class="keyvalue">{{farmInfo.farmOrg}}</span></a></li>
+                  <li><a href="javascript:;">
+                    <span class="keyname">Menu : </span>
+                    <span class="keyvalue">{{path}}</span></a></li>
+                </ul>
+              </li>
+              <!--切换语言-->
+              <li class="dropdown hovered">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                   aria-haspopup="true" aria-expanded="false" style="display: block;width: 100%;padding: 10px;">
+                  <span class="glyphicon glyphicon-globe" style="font-size: 1rem;"></span> {{$t('message.Language')}} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" style="top: 83px;left: 0;color: #000;background-color:#fff;">
+                  <span class="glyphicon glyphicon-triangle-top" style="color: #fff;position: absolute;top: 30px;left: 25px;"></span>
+                  <li @click="switchLang('zh_CN')"><a href="javascript:;"><span class="glyphicon glyphicon-home" style="font-size: 1rem"></span> 中文</a></li>
+                  <li @click="switchLang('en')"><a href="javascript:;"><span class="glyphicon glyphicon-cog" style="font-size: 1rem;"></span> English</a></li>
+                </ul>
+              </li>
+              <li class="hovered" style="display: block;width: 100%;padding: 10px;">
+                <a :href="logbackUrl">
+                  <span class="glyphicon glyphicon-off" style="font-size: 1rem"></span> {{$t('message.Logback')}}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <!--大屏幕-->
+          <ul class="nav navbar-nav navbar-right hidden-xs">
+            <li class="dropdown">
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                 aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-user" style="font-size: 14px"></span> {{$t('message.UserInfo')}} <span class="caret"></span></a>
+              <ul class="dropdown-menu" id="PCpoint" style=";right: 40px;border:1px solid #ddd;">
+                <span class="glyphicon glyphicon-triangle-top" style="color: #fff;position: absolute;top: -10px;left: 145px;"></span>
+                <li><a href="javascript:;">
+                  <span class="keyname">userName：</span>
+                  <span class="keyvalue">{{userRealName}}</span></a></li>
+                <li><a href="javascript:;">
+                  <span class="keyname">programId :</span>
+                  <span class="keyvalue">{{programId}}</span></a></li>
+                <li><a href="javascript:;">
+                  <span class="keyname">orgCode：</span>
+                  <span class="keyvalue">{{farmInfo.orgCode}}</span></a></li>
+                <li><a href="javascript:;">
+                  <span class="keyname">farmOrg：</span>
+                  <span class="keyvalue">{{farmInfo.farmOrg}}</span></a></li>
+                <li><a href="javascript:;">
+                  <span class="keyname">Menu : </span>
+                  <span class="keyvalue">{{path}}</span></a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                 aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-globe"></span> {{$t('message.Language')}} <span class="caret"></span></a>
+              <ul class="dropdown-menu" id="PCpoint2" style="width: 50px;top: 51px;border:1px solid #ddd;">
+                <span class="glyphicon glyphicon-triangle-top" style="color: #fff;position: absolute;top: -10px;left: 85px;"></span>
+                <li @click="switchLang('zh_CN')"><a href="javascript:"><span class="glyphicon glyphicon-home" style="font-size: 1rem"></span> 中文</a></li>
+                <li @click="switchLang('en')"><a href="javascript:"><span class="glyphicon glyphicon-cog" style="font-size: 1rem;"></span> English</a></li>
+              </ul>
+            </li>
+            <li class="" style="margin-right: 30px">
+              <a :href="logoutUrl">
+                <span class="glyphicon glyphicon-off"></span> {{$t('message.Logout')}} </a>
+            </li>
+          </ul>
+        </div>
+      </header>
+    </nav>
+  </header>
+
+</template>
+
+<script>
+  import jQuery from 'jquery'
+  export default {
+    name: 'VHeader',
+    data () {
+      return {
+        show: false,
+        backUrl: '',
+        outUrl: '',
+        userRealName: '',
+        programIdMap: new Map([
+          ['cmsmst002', '8002'],
+          ['swinereport01', '8002001'],
+          ['swinereport02', '8002002'],
+          ['swinereport03', '8002003'],
+          ['swinereport04', '8002004'],
+          ['swinereport05', '8002005'],
+          ['swinereport06', '8002006'],
+          ['swinereport07', '8002007'],
+          ['swinereport08', '8002008'],
+          ['swinereport09', '8002009'],
+          ['swinereport10', '8002010'],
+          ['swinereport11', '8002011'],
+          ['swinereport12', '8002012'],
+          ['swinereport13', '8002013'],
+          ['swinereport14', '8002014'],
+          ['swinereport15', '8002015'],
+          ['swinereport16', '8002016'],
+          ['cmsmst001', '8003'],
+          ['growerreport01', '8003001'],
+          ['growerreport02', '8003002'],
+          ['growerreport03', '8003003'],
+          ['growerreport04', '8003004'],
+          ['growerreport05', '8003005'],
+          ['growerreport06', '8003006'],
+          ['growerreport07', '8003007'],
+          ['growerreport08', '8003008'],
+          ['growerreport09', '8003009'],
+          ['growerreport10', '8003010'],
+          ['growerreport11', '8003011']
+        ])
+      }
+    },
+    created () {
+      var _self = this
+      jQuery.ajax({
+        url: '/grower/backUrl',
+        type: 'GET',
+        success: function (data) {
+          _self.backUrl = data
+          _self.outUrl = data.replace(/home/, 'user/login')
+        }
+      }),
+      jQuery.ajax({
+        url: '/user/userInfo',
+        method: 'GET',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+          _self.userRealName = data.userRealName
+        }
+      })
+    },
+    computed: {
+      path () {
+//        console.log(this.$route)
+//        return this.$route.name
+//        console.log(this.$route.name)
+        return this.$t('message.title' + this.$route.name)
+      },
+      programId () {
+        console.log(this.$t(this.$route.name))
+        var str = this.$t(this.$route.name)
+        return this.programIdMap.get(str.toLocaleLowerCase())
+      },
+      farmInfo () {
+        return {
+          'farmOrg': this.$route.params.farmOrg,
+          'orgCode': this.$route.params.orgCode
+        }
+      },
+      backToMain () {
+        console.log('this.$route.meta.backToMain = ' + this.$route.meta.backToMain)
+        return this.$route.meta.backToMain
+      },
+      backToMainUrl () {
+        if (this.backToMain) {
+          // 跳转回ifarm系统的/main/{orgCode}/{farmOrg}/module页面
+          var ary = this.$route.path.split('/')
+          var url = '/main/' + ary[ary.length - 2] + '/' + ary[ary.length - 1] + '/module'
+          return url
+        }
+        return ''
+      },
+      logbackUrl () {
+        return this.backUrl
+      },
+      logoutUrl () {
+        return this.outUrl
+      }
+    },
+    methods: {
+      back () {
+        console.log(this.$router)
+        this.$router.go(-1)
+      },
+      showList () {
+        this.show = !this.show
+      },
+      switchLang (lang) {
+        jQuery.ajax({
+          url: '/user/lang',
+          method: 'POST',
+          data: {
+            lang: lang
+          },
+          dataType: 'json',
+          success: function (result) {
+            if (result.success) {
+              location.reload()
+            }
+          }
+        })
+      }
+    }
+  }
+</script>
+<style>
+  *{
+    padding: 0;
+    margin:0;
+  }
+  ul{
+    list-style:none;
+  }
+
+  @media (max-width: 767px){
+    .skin-blue .main-header .navbar .dropdown-menu li a {
+      color: #333;
+    }
+    .dropdown-menu li a{
+      cursor: default;
+    }
+    .dropdown-menu li a:hover{
+      background-color: #f3f0f0 !important;
+    }
+  }
+
+  @media screen and (max-width : 991px ) {
+    #PCpoint{
+      right: 205px!important;
+    }
+    #PCpoint2{
+      right: 100px!important;
+    }
+    .keyname{
+      display: inline-block;
+      padding-right: 10px;
+      font-weight: 700;
+    }
+    .keyvalue {
+      padding:0 5px ;
+    }
+  }
+  @media screen and (min-width : 991px ){
+    #PCpoint{
+      right: 0!important;
+    }
+    #PCpoint2{
+      right: 0px!important;
+    }
+    #PCpoint li a{
+      cursor: default;
+      color: #777;
+    }
+    #PCpoint li a:hover{
+      color: #333;
+    }
+    .keyname{
+      display: inline-block;
+      padding-right: 10px;
+      font-weight: 700;
+    }
+    .keyvalue {
+      padding: 0 5px ;
+    }
+  }
+  @media screen and (max-width: 776px) {
+  .dropdown-menu li a{
+    cursor: default;
+    color: #333;
+  }
+  .hovered:hover{
+    background-color: #3680ab;
+  }
+  .keyname{
+    display: inline-block;
+    padding-right: 10px;
+    font-weight: 700;
+  }
+  .keyvalue {
+    padding: 0 5px ;
+  }
+}
+  @media screen and (max-width: 786px){
+    #path{
+      width: 240px;
+    }
+  }
+  @media screen and (max-width: 330px) {
+    #path{
+      width: 150px;
+    }
+  }
+</style>

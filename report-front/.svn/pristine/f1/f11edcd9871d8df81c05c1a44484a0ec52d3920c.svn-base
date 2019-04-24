@@ -1,0 +1,32 @@
+// The Vue build version to load with the `import` command
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+
+import jQuery from 'jquery'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'adminlte/dist/css/AdminLTE.min.css'
+import 'adminlte/dist/css/skins/skin-blue.min.css'
+import 'font-awesome/css/font-awesome.min.css'
+import 'bootstrap-datepicker/dist/css/bootstrap-datepicker.css'
+import Bootstrap from 'bootstrap'
+import AdminLte from 'adminlte'
+import datepicker from 'bootstrap-datepicker'
+
+import Vue from 'vue'
+import App from './App'
+import router from './router'
+
+Vue.config.productionTip = false
+console.log('>>> main.js')
+window.jQuery = jQuery
+console.log(window)
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  template: '<App/>',
+  components: {App, jQuery, Bootstrap, AdminLte, datepicker},
+  data: {
+    eventHub: new Vue()
+  }
+})

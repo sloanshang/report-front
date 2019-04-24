@@ -1,0 +1,21 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+import HelloWorld from '@/components/HelloWorld'
+import Report01 from '@/components/swine/Report01'
+
+Vue.use(Router)
+console.log('>>> index.js')
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'HelloWorld',
+      component: HelloWorld
+    },
+    {
+      path: '/report01',
+      name: 'Report01',
+      component: Report01
+    }
+  ]
+})

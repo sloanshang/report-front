@@ -1,0 +1,69 @@
+// 公用的文本内容
+var messages = {
+  en: {
+    message: {
+      CloseoutReport: 'Closeout Report',
+      Expenses: 'Expenses',
+      PigMovements: 'Pig Movements',
+      FeedDeliveriesByDate: 'Feed Deliveries By Date',
+      FeedBudget: 'Feed Budget',
+      FeedDietSummary: 'Feed Diet Summary',
+      Deaths: 'Deaths',
+      InventorySummaryPigDays: 'Inventory Summary & Pig Days',
+      KillSheet: 'Kill Sheet',
+      GroupHistory: 'Group History',
+      Treatments: 'Treatments',
+      Export: 'Export',
+      Farm: 'Farm',
+      Date: 'Date',
+      GroupID: 'Group ID',
+      Query: 'Search',
+      SelectFlock: 'Select Flock',
+      SelectStartDate: 'Select The Start Date',
+      SelectEndDate: 'Select The End Date',
+      Language: 'Language',
+      Logout: 'Logout',
+      Logback: 'Logback',
+      UserInfo: 'UserInfo',
+      Record: 'Record',
+      Manage: 'Swine Manage',
+      ChooseFarm: 'Farm',
+      My: 'Me',
+      Report: 'Report'
+    }
+  },
+  zh_CN: {
+    message: {
+      CloseoutReport: '结栏报告报表',
+      Expenses: '收支报表',
+      PigMovements: '猪只转移报表',
+      FeedDeliveriesByDate: '猪舍饲料接收报表',
+      FeedBudget: '猪舍饲料预算报表',
+      FeedDietSummary: '饲料总结报表',
+      Deaths: '猪只死亡报表',
+      InventorySummaryPigDays: '猪场库存报表',
+      KillSheet: '屠宰报表',
+      GroupHistory: '历史记录报表',
+      Treatments: '兽医报表',
+      Export: '导出',
+      Farm: '农场',
+      Date: '空栏日期',
+      GroupID: '批次',
+      Query: '查询',
+      SelectFlock: '选择批次',
+      SelectStartDate: '选择开始日期',
+      SelectEndDate: '选择结束日期',
+      Language: '语言',
+      Logout: '退出',
+      Logback: '返回',
+      UserInfo: '用户信息',
+      Record: '录入',
+      Manage: '管理',
+      ChooseFarm: '选场',
+      My: '我的',
+      Report: '报表'
+    }
+  }
+}
+
+export default messages

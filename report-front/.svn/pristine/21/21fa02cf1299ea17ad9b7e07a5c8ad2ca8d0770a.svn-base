@@ -1,0 +1,97 @@
+<template>
+  <div class="content-wrapper" style="margin-left:0">
+    <section class="content">
+      <div class="row">
+        <!--给下面的div增加v-show="menu.isShow" 可以实现权限-->
+        <div class="col-sm-12 col-md-12"  v-for="menu in menus">
+          <div class="box box-info box-solid" style="margin-bottom: 70px;">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{menu.group}}</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-footer no-padding">
+              <ul class="nav nav-pills nav-stacked">
+                <li v-for="item in menu.links">
+                  <!--给下面的div增加 v-show = "item.isAllow" 可以实现权限-->
+                  <router-link :to="item.link"  style="text-align: left;">
+                    <i class="fa fa-circle-o " :class="{'text-yellow': item.link != '#'}"></i>
+                    {{item.title}}
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    data () {
+      return {
+        menus: [
+          {
+            group: this.$t('message.GrowerReport'),
+            links: [
+              {
+                title: '1.' + this.$t('message.titleGrowerReport01'),
+                link: '/growerReport01/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '2.' + this.$t('message.titleGrowerReport02'),
+                link: '/growerReport02/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '3.' + this.$t('message.titleGrowerReport03'),
+                link: '/growerReport03/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '4.' + this.$t('message.titleGrowerReport04'),
+                link: '/growerReport04/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '5.' + this.$t('message.titleGrowerReport05'),
+                link: '/growerReport05/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '6.' + this.$t('message.titleGrowerReport06'),
+                link: '/growerReport06/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '7.' + this.$t('message.titleGrowerReport07'),
+                link: '/growerReport07/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '8.' + this.$t('message.titleGrowerReport08'),
+                link: '/growerReport08/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '9.' + this.$t('message.titleGrowerReport09'),
+                link: '/growerReport09/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '10.' + this.$t('message.titleGrowerReport10'),
+                link: '/growerReport10/' + this.orgCode + '/' + this.farmOrg
+              },
+              {
+                title: '11.' + this.$t('message.titleGrowerReport10'),
+                link: '/growerReport11/' + this.orgCode + '/' + this.farmOrg
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+</script>
+

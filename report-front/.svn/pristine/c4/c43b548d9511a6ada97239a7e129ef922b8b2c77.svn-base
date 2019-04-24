@@ -1,0 +1,75 @@
+// 公用的文本内容
+var messages = {
+  en: {
+    message: {
+      hello: 'hello world',
+      greeting: 'good morning',
+      quantity: 'Quantity',
+      quantityFemale: 'female quantity',
+      quantityMale: 'male quantity',
+      weight: 'Weight',
+      weight2: 'Weight',
+      addDataBtn: 'Add Data',
+      editDataBtn: 'Detail / Edit Data',
+      editDataBtn2: 'Edit Data',
+      refDocumentNo: 'RefDocumentNo',
+      price: 'price',
+      amount: 'amount',
+      deleteInfoContent: 'Do you sure you want to delete order {0} ?',
+      activePeriod: 'transaction date must be in active period {0}',
+      saveSuccessMessage: 'save Success',
+      saveFailMessage: 'save Fail',
+      deleteSuccessMessage: 'delete Success',
+      close: 'Close',
+      save: 'Save',
+      ok: 'OK',
+      info: 'Infomation',
+      warning: 'Warning',
+      error: 'Error',
+      noData: 'No Data',
+      entryTypeForPurchaseApiTypeLable: 'PurchaseType',
+      entryTypeForPurchaseApiType0: 'Purchase',
+      entryTypeForPurchaseApiType1: 'Free',
+      entryTypeForSalesApiTypeLable: 'SalesType',
+      entryTypeForSalesApiType0: 'Sales',
+      entryTypeForSalesApiType1: 'Free'
+    }
+  },
+  zh_CN: {
+    message: {
+      hello: '你好，世界',
+      greeting: '早上好',
+      quantity: '数量',
+      quantityFemale: '母猪数量',
+      quantityMale: '公猪数量',
+      weight: '重量',
+      weight2: '容量(ml)',
+      addDataBtn: '添加信息',
+      editDataBtn: '明细/修改信息',
+      editDataBtn2: '修改信息',
+      refDocumentNo: '参考单据号',
+      price: '单价',
+      amount: '总金额',
+      deleteInfoContent: '你确定删除订单 {0} ?',
+      activePeriod: '订单日期必须大于等于 {0}',
+      saveSuccessMessage: '保存成功',
+      saveFailMessage: '保存失败',
+      deleteSuccessMessage: '删除成功',
+      close: '关闭',
+      save: '保存',
+      ok: '确定',
+      info: '信息',
+      warning: '警告',
+      error: '错误',
+      noData: '没有数据',
+      entryTypeForPurchaseApiTypeLable: '采购类型',
+      entryTypeForPurchaseApiType0: '采购',
+      entryTypeForPurchaseApiType1: '赠送',
+      entryTypeForSalesApiTypeLable: '销售类型',
+      entryTypeForSalesApiType0: '销售',
+      entryTypeForSalesApiType1: '赠送'
+    }
+  }
+}
+
+export default messages

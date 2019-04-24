@@ -1,0 +1,45 @@
+<template>
+    <div class="row clearfix">
+      <div class="col-md-12 column"  style="margin: 10px">
+        <div class="row clearfix">
+          <div class="col-md-3 column">
+            <div class="input-group" style="padding-bottom: 2px">
+              <span class="input-group-addon">农场：</span>
+              <input  class="form-control" type="text" name="text" v-bind:value="orgCode + ' ' + farmOrg " readonly size="12" maxlength="50" laceholder="twitterhandle">
+            </div>
+          </div>
+          <div class="col-md-3 column">
+            <div class="input-group" style="padding-bottom: 2px">
+              <span class="input-group-addon">批次：</span>
+              <input  class="form-control" type="text" name="text" v-bind:value="199" size="12" maxlength="50" laceholder="twitterhandle">
+            </div>
+          </div>
+          <div class="col-md-6 column">
+            <dtre001 :begin="beginDate" @update:begin="val => $emit('update:beginDate', val)"
+                     :end="endDate" @update:end="val => $emit('update:endDate', val)" :autoSearch="true"
+                     @doSearch="(a, b) => $emit('doSearch', a, b)"/>
+          </div>
+        </div>
+      </div>
+    </div>
+</template>
+<script>
+  import Dtre001 from '@/components/cm/dtre001'
+
+  export default {
+    props: ['orgCode', 'farmOrg'],
+    components: {
+      Dtre001
+    },
+    data () {
+      return {
+        beginDate: '2014-10-10',
+        endDate: '2017-12-12',
+        value: ['2017-02-01']
+      }
+    },
+    created () {
+      console.log(this.orgCode + this.farmOrg)
+    }
+  }
+</script>

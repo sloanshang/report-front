@@ -1,0 +1,224 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+// import HelloWorld from '@/components/HelloWorld'
+import GrowerReport01 from '@/components/grower/GrowerReport01'
+import GrowerReport02 from '@/components/grower/GrowerReport02'
+import GrowerReport03 from '@/components/grower/GrowerReport03'
+import GrowerReport04 from '@/components/grower/GrowerReport04'
+import GrowerReport06 from '@/components/grower/GrowerReport06'
+import GrowerReport07 from '@/components/grower/GrowerReport07'
+import GrowerReport08 from '@/components/grower/GrowerReport08'
+import GrowerReport10 from '@/components/grower/GrowerReport10'
+import GrowerReport11 from '@/components/grower/GrowerReport11'
+import SwineReport01 from '@/components/swine/SwineReport01'
+import SwineReport02 from '@/components/swine/SwineReport02'
+import SwineReport03 from '@/components/swine/SwineReport03'
+import SwineReport04 from '@/components/swine/SwineReport04'
+import SwineReport05 from '@/components/swine/SwineReport05'
+import SwineReport06 from '@/components/swine/SwineReport06'
+import SwineReport07 from '@/components/swine/SwineReport07'
+import SwineReport08 from '@/components/swine/SwineReport08'
+import SwineReport09 from '@/components/swine/SwineReport09'
+import SwineReport10 from '@/components/swine/SwineReport10'
+import SwineReport11 from '@/components/swine/SwineReport11'
+import SwineReport12 from '@/components/swine/SwineReport12'
+import SwineReport13 from '@/components/swine/SwineReport13'
+import SwineReport14 from '@/components/swine/SwineReport14'
+import SwineReport15 from '@/components/swine/SwineReport15'
+import SwineReport16 from '@/components/swine/SwineReport16'
+
+import Cmsmst001 from '@/components/cm/smst001'
+import Cmsmst002 from '@/components/cm/smst002'
+import Test01 from '@/components/test/test01'
+import {getCookie} from '@/components/utils/cookie'
+Vue.use(Router)
+
+var orgCode = getCookie('orgCode') || 'demo'
+var farmOrg = getCookie('farmOrg') || 'demo'
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      redirect: '/cmsmst001/' + orgCode + '/' + farmOrg
+    },
+    {
+      path: '/cmsmst001/:orgCode/:farmOrg',
+      name: 'Cmsmst001',
+      component: Cmsmst001,
+      props: true,
+      meta: {
+        backToMain: true
+      }
+    },
+    {
+      path: '/cmsmst002',
+      redirect: '/cmsmst002/' + orgCode + '/' + farmOrg
+    },
+    {
+      path: '/cmsmst002/:orgCode/:farmOrg',
+      name: 'Cmsmst002',
+      component: Cmsmst002,
+      props: true,
+      meta: {
+        backToMain: true
+      }
+    },
+    {
+      path: '/growerReport01/:orgCode/:farmOrg',
+      name: 'GrowerReport01',
+      component: GrowerReport01,
+      props: true
+    },
+    {
+      path: '/growerReport02/:orgCode/:farmOrg',
+      name: 'GrowerReport02',
+      component: GrowerReport02,
+      props: true
+    },
+    {
+      path: '/growerReport03/:orgCode/:farmOrg',
+      name: 'GrowerReport03',
+      component: GrowerReport03,
+      props: true
+    },
+    {
+      path: '/growerReport04/:orgCode/:farmOrg',
+      name: 'GrowerReport04',
+      component: GrowerReport04,
+      props: true
+    },
+    {
+      path: '/growerReport06/:orgCode/:farmOrg',
+      name: 'GrowerReport06',
+      component: GrowerReport06,
+      props: true
+    },
+    {
+      path: '/growerReport07/:orgCode/:farmOrg',
+      name: 'GrowerReport07',
+      component: GrowerReport07,
+      props: true
+    },
+    {
+      path: '/growerReport08/:orgCode/:farmOrg',
+      name: 'GrowerReport08',
+      component: GrowerReport08,
+      props: true
+    },
+    {
+      path: '/growerReport10/:orgCode/:farmOrg',
+      name: 'GrowerReport10',
+      component: GrowerReport10,
+      props: true
+    },
+    {
+      path: '/growerReport11/:orgCode/:farmOrg',
+      name: 'GrowerReport11',
+      component: GrowerReport11,
+      props: true
+    },
+    {
+      path: '/test01',
+      name: 'Test01',
+      component: Test01,
+      props: true
+    },
+    {
+      path: '/swineReport01/:orgCode/:farmOrg',
+      name: 'SwineReport01',
+      component: SwineReport01,
+      props: true
+    },
+    {
+      path: '/swineReport02/:orgCode/:farmOrg',
+      name: 'SwineReport02',
+      component: SwineReport02,
+      props: true
+    },
+    {
+      path: '/swineReport03/:orgCode/:farmOrg',
+      name: 'SwineReport03',
+      component: SwineReport03,
+      props: true
+    },
+    {
+      path: '/swineReport04/:orgCode/:farmOrg',
+      name: 'SwineReport04',
+      component: SwineReport04,
+      props: true
+    },
+    {
+      path: '/swineReport05/:orgCode/:farmOrg',
+      name: 'SwineReport05',
+      component: SwineReport05,
+      props: true
+    },
+    {
+      path: '/swineReport06/:orgCode/:farmOrg',
+      name: 'SwineReport06',
+      component: SwineReport06,
+      props: true
+    },
+    {
+      path: '/swineReport07/:orgCode/:farmOrg',
+      name: 'SwineReport07',
+      component: SwineReport07,
+      props: true
+    },
+    {
+      path: '/swineReport08/:orgCode/:farmOrg',
+      name: 'SwineReport08',
+      component: SwineReport08,
+      props: true
+    },
+    {
+      path: '/swineReport09/:orgCode/:farmOrg',
+      name: 'SwineReport09',
+      component: SwineReport09,
+      props: true
+    },
+    {
+      path: '/swineReport10/:orgCode/:farmOrg',
+      name: 'SwineReport10',
+      component: SwineReport10,
+      props: true
+    },
+    {
+      path: '/swineReport11/:orgCode/:farmOrg',
+      name: 'SwineReport11',
+      component: SwineReport11,
+      props: true
+    },
+    {
+      path: '/swineReport12/:orgCode/:farmOrg',
+      name: 'SwineReport12',
+      component: SwineReport12,
+      props: true
+    },
+    {
+      path: '/swineReport13/:orgCode/:farmOrg',
+      name: 'SwineReport13',
+      component: SwineReport13,
+      props: true
+    },
+    {
+      path: '/swineReport14/:orgCode/:farmOrg',
+      name: 'SwineReport14',
+      component: SwineReport14,
+      props: true
+    },
+    {
+      path: '/swineReport15/:orgCode/:farmOrg',
+      name: 'SwineReport15',
+      component: SwineReport15,
+      props: true
+    },
+    {
+      path: '/swineReport16/:orgCode/:farmOrg',
+      name: 'SwineReport16',
+      component: SwineReport16,
+      props: true
+    }
+  ]
+})

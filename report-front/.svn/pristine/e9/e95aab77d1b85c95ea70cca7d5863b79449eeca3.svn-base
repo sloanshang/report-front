@@ -1,0 +1,67 @@
+<template>
+  <div style="height:50px; background:#ecf0f5;position: fixed;left: 0;bottom: 0;width: 100%;height: 50px">
+    <footer class="main-footer"
+            style="position:absolute; margin-left:0px; bottom:0px; width:100%;padding:3px;background-color:#0e90d2">
+
+      <div>
+        <div class="col-xs-1" style="text-align:center"> </div>
+        <div class="col-xs-2" style="text-align:center">
+          <a :href="inputRecord">
+		  <img style="width: 24px;height: 24px" src="../../assets/inputRecord.png"/><br>
+          <font color="white" size="2">录入</font>
+		   </a>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <a :href="reportUrl">
+            <img style="width: 24px;height: 24px" src="../../assets/ReportModule.png"/><br>
+            <font color="white" size="2">报表</font>
+          </a>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <a :href="backToMainUrl">
+          <img style="width: 24px;height: 24px" src="../../assets/Icon-Zhuguanli1.png"/><br>
+          <font color="white" size="2">管理</font>
+          </a>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <a href="/main/index">
+            <img style="width: 24px;height: 24px" src="../../assets/xuanchang.png"/><br>
+            <font color="white" size="2">选场</font>
+          </a>
+        </div>
+        <div class="col-xs-2" style="text-align:center">
+          <a :href="aboutToMeUrl">
+          <img style="width: 24px;height: 24px" src="../../assets/Icon-WoDe1.png"/><br>
+          <font color="white" size="2">我的</font>
+          </a>
+        </div>
+
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: 'VFooter',
+    props: ['orgCode', 'farmOrg'],
+    computed: {
+      moduleUrl () {
+        var params = this.$route.params
+        return params.orgCode + '/' + params.farmOrg
+      },
+      inputRecord () {
+        return '/index.html?' + (new Date()).valueOf()
+      },
+      reportUrl () {
+        return '/report/' + this.moduleUrl + '/index'
+      },
+      backToMainUrl () {
+        return '/main/' + this.moduleUrl + '/module'
+      },
+      aboutToMeUrl () {
+        return '/about/' + this.moduleUrl + '/index'
+      }
+    }
+  }
+</script>

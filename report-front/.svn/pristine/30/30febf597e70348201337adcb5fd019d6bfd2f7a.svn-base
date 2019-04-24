@@ -1,0 +1,365 @@
+<template>
+  <div class="row" id="pdfDom" style="padding: 55px 16px;background-color:#fff;">
+    <form class="form" style="overflow: hidden">
+      <div v-show="!up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.farm')}}: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('swineReport.variety')}}： </div>
+            <div class="form-control" style="padding: 0;height: auto;">
+              <variety001 style="width: 100%;"  v-on:getVariety="getVariety" size="small"></variety001>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('swineReport.parity')}}： </div>
+            <div class="form-control" style="padding: 6px;">
+              <input type="radio" checked="checked"> {{$t('swineReport.p0')}}
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="  padding: 0 15px;">
+            <div class="input-group-addon" v-show="device=='PC'">{{$t('swineReport.endDate')}}： </div>
+            <div class="form-control" style="padding: 0;height: auto;">
+              <el-date-picker style="width: 100%;" v-model="PAR_DATE" type="date" placeholder="选择日期" default-value="" size="small" value-format="yyyy-MM-dd"></el-date-picker>
+            </div>
+            <div class="input-group-addon" style="height: 34px;padding: 0;border: none">
+              <el-radio-group style="height: 34px;" v-model="PAR_REPORT_TYPE" size="small">
+                <el-radio-button label="PARITY_W">{{$t('swineReport.week')}}</el-radio-button>
+                <el-radio-button label="PARITY_M">{{$t('swineReport.month')}}</el-radio-button>
+              </el-radio-group>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{PAR_REPORT_TYPE === 'PARITY_W' ? $t("swineReport.backWeek"): $t("swineReport.backMonth")}}: </div>
+            <div class="form-control" style="padding: 0; bottom: 0px;height: auto;">
+              <el-input-number style="width: 100%;" v-model="PAR_BACK_PERIOD_WEEKS" :min="1" :max="12" label="描述文字" size="small"></el-input-number>
+            </div>
+            <div class="input-group-addon">{{PAR_REPORT_TYPE === 'PARITY_W' ? $t("swineReport.week"): $t("swineReport.month")}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="doSearch">{{$t('swineReport.search')}}</button>&nbsp;
+          <a href="#" id="dlink"><button type="button" class="btn btn-primary" @click="getExcel">{{$t('swineReport.export')}} Excel</button>&nbsp;</a>
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('swineReport.export')}} PDF</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" v-show="!up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" v-show="up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-show="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-show="tableFlag && datas.length !== 0" style="">
+      <table id="fHeader" class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC' && fixedHeader">
+        <tr>
+          <th>{{$t('swineReport.breakDown')}} </th>
+          <th>{{tableTh.date_column_01_min_date}}<br>{{tableTh.date_column_01_max_date}}</th>
+          <th>{{tableTh.date_column_02_min_date}}<br>{{tableTh.date_column_02_max_date}}</th>
+          <th>{{tableTh.date_column_03_min_date}}<br>{{tableTh.date_column_03_max_date}}</th>
+          <th>{{tableTh.date_column_04_min_date}}<br>{{tableTh.date_column_04_max_date}}</th>
+          <th>{{tableTh.date_column_05_min_date}}<br>{{tableTh.date_column_05_max_date}}</th>
+          <th>{{tableTh.date_column_06_min_date}}<br>{{tableTh.date_column_06_max_date}}</th>
+          <th>{{tableTh.date_column_07_min_date}}<br>{{tableTh.date_column_07_max_date}}</th>
+          <th>{{tableTh.date_column_08_min_date}}<br>{{tableTh.date_column_08_max_date}}</th>
+          <th>{{tableTh.date_column_09_min_date}}<br>{{tableTh.date_column_09_max_date}}</th>
+          <th>{{tableTh.date_column_10_min_date}}<br>{{tableTh.date_column_10_max_date}}</th>
+          <th>{{$t('swineReport.acum')}}</th>
+          <th>{{$t('swineReport.avg')}} </th>
+          <th>{{$t('swineReport.target')}}</th>
+        </tr>
+        </thead>
+      </table>
+      <div style="padding-bottom: 4px">
+        <h3 style="text-align: center">{{$t('message.titleSwineReport03')}}</h3>
+        <el-tag size="small ">{{$t('swineReport.parity')}} : {{$t('swineReport.p0')}}</el-tag>
+        <el-tag size="small ">{{$t('swineReport.variety')}}: {{tableTh.breeder}}</el-tag>
+        <el-tag size="small ">{{$t('swineReport.daterange')}} : {{tableTh.date_column_acm01_min_date}}-{{tableTh.date_column_acm01_max_date}}</el-tag>
+        <el-tag size="small ">{{$t('swineReport.printTime')}} : {{tableTh.printReportTime}}</el-tag>
+      </div>
+      <table v-show="device=='PC'" id="sTable" class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr>
+          <th>{{$t('swineReport.breakDown')}} </th>
+          <th>{{tableTh.date_column_01_min_date}}<br>{{tableTh.date_column_01_max_date}}</th>
+          <th>{{tableTh.date_column_02_min_date}}<br>{{tableTh.date_column_02_max_date}}</th>
+          <th>{{tableTh.date_column_03_min_date}}<br>{{tableTh.date_column_03_max_date}}</th>
+          <th>{{tableTh.date_column_04_min_date}}<br>{{tableTh.date_column_04_max_date}}</th>
+          <th>{{tableTh.date_column_05_min_date}}<br>{{tableTh.date_column_05_max_date}}</th>
+          <th>{{tableTh.date_column_06_min_date}}<br>{{tableTh.date_column_06_max_date}}</th>
+          <th>{{tableTh.date_column_07_min_date}}<br>{{tableTh.date_column_07_max_date}}</th>
+          <th>{{tableTh.date_column_08_min_date}}<br>{{tableTh.date_column_08_max_date}}</th>
+          <th>{{tableTh.date_column_09_min_date}}<br>{{tableTh.date_column_09_max_date}}</th>
+          <th>{{tableTh.date_column_10_min_date}}<br>{{tableTh.date_column_10_max_date}}</th>
+          <th>{{$t('swineReport.acum')}}</th>
+          <th>{{$t('swineReport.avg')}} </th>
+          <th>{{$t('swineReport.target')}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="data in datas">
+          <td>{{data.sub_category_name_loc}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_1}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_2}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_3}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_4}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_5}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_6}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_7}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_8}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_9}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_10}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_acm_01}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_avg_01}}</td>
+          <td>{{data.sub_category == '10.1000' || data.sub_category =='20.0000' || data.sub_category =='20.1000' || data.sub_category =='30.0000' || data.sub_category =='30.1000' || data.sub_category =='40.0000' || data.sub_category =='40.1000'?' ': data.column_traget_01}}</td>
+        </tr>
+        </tbody>
+      </table>
+      <table v-show="device=='M'" class="table table-bordered table-hover table-striped">
+        <tbody>
+        <tr v-for="data in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.breakDown')}}</span>
+                <span class="value">{{data.sub_category_name_loc}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_01_min_date}}<br>{{tableTh.date_column_01_max_date}} </span>
+                <span class="value">{{data.column_1}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_02_min_date}}<br>{{tableTh.date_column_02_max_date}} </span>
+                <span class="value"> {{data.column_2}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_03_min_date}}<br>{{tableTh.date_column_03_max_date}} </span>
+                <span class="value"> {{data.column_3}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_04_min_date}}<br>{{tableTh.date_column_04_max_date}} </span>
+                <span class="value"> {{data.column_4}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_05_min_date}}<br>{{tableTh.date_column_05_max_date}} </span>
+                <span class="value"> {{data.column_5}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_06_min_date}}<br>{{tableTh.date_column_06_max_date}} </span>
+                <span class="value"> {{data.column_6}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_07_min_date}}<br>{{tableTh.date_column_07_max_date}} </span>
+                <span class="value"> {{data.column_7}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_08_min_date}}<br>{{tableTh.date_column_08_max_date}} </span>
+                <span class="value"> {{data.column_8}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_09_min_date}}<br>{{tableTh.date_column_09_max_date}} </span>
+                <span class="value"> {{data.column_9}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{tableTh.date_column_10_min_date}}<br>{{tableTh.date_column_10_max_date}} </span>
+                <span class="value"> {{data.column_10}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.acum')}} </span>
+                <span class="value"> {{data.column_acm_01}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.avg')}} </span>
+                <span class="value">{{data.column_avg_01}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.target')}} </span>
+                <span class="value">{{data.column_traget_01}}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <p v-show="tableFlag && datas.length == 0" style="text-align: center;">{{$t('swineReport.noData')}}</p>
+  </div>
+</template>
+
+<script>
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  import Variety001 from '@/components/cm/variety001'
+  import jQuery from 'jquery'
+  import vueLoading from 'vue-loading-template'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device'],
+    name: 'swine-report02',
+    components: {
+      Dtre001,
+      Dtre002,
+      Variety001,
+      vueLoading
+    },
+    data () {
+      return {
+        fixedHeader: false,
+        tag: {},
+        PAR_DATE: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
+        PAR_ALL_BREED: 'ALL',
+        PAR_START_BREED: '0',
+        PAR_END_BREED: '99',
+        PAR_REPORT_TYPE: 'PARITY_W',
+        PAR_BACK_PERIOD_WEEKS: '10',
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        datas: [],
+        up: false,
+        tableTh: {},
+        htmlTitle: this.$t('message.titleSwineReport03')
+      }
+    },
+    mounted () {
+      this.headerMonitor()
+    },
+    methods: {
+      getExcel () {
+        var excelTitle = '<h1 style="text-align: center">' + '</h1>'
+        excelTitle += '<h2 style="text-align: center">' + this.htmlTitle + '</h2>'
+        excelTitle += '<div style="font-weight: bold"><span>' + this.$t('swineReport.queryDate') + ':' + this.tableTh.date_column_acm01_min_date + this.$t('swineReport.to') + this.tableTh.date_column_acm01_max_date + '</span></div>'
+        this.tableToExcel2(excelTitle, 'sTable')
+      },
+      down () {
+        this.up = !this.up
+      },
+      getVariety (item) {
+        var _self = this
+        if (item === 'TOTAL') {
+          _self.PAR_ALL_BREED = 'ALL'
+          _self.PAR_END_BREED = 99
+        } else {
+          _self.PAR_ALL_BREED = 'NOT_ALL'
+          _self.PAR_END_BREED = item
+        }
+      },
+      doSearch () {
+        var _self = this
+        _self.datas = ''
+        _self.tableFlag = false
+        _self.loadFlag = true
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report2',
+          type: 'POST',
+          // contentType: 'application/json',
+          data: {'PAR_DATE': _self.PAR_DATE, 'PAR_ALL_BREED': _self.PAR_ALL_BREED, 'PAR_START_BREED': _self.PAR_START_BREED, 'PAR_END_BREED': _self.PAR_END_BREED, 'PAR_BACK_PERIOD_WEEKS': _self.PAR_BACK_PERIOD_WEEKS, 'pAR_REPORT_TYPE': _self.PAR_REPORT_TYPE},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            _self.loadFlag = false
+            _self.tableTh = res[0]
+            _self.tableFlag = true
+            _self.$nextTick(function () {
+              _self.tag.hHeight = jQuery('#sTable').offset().top
+            })
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      },
+      headerMonitor () {
+        var self = this
+//        var hHeight = jQuery('#sTable').offset().top
+        jQuery(document).scroll(function () {
+          // 当滚动条达到偏移值的时候，出现固定表头
+          if (jQuery(this).scrollTop() >= self.tag.hHeight - 44) {
+            console.log('++++' + jQuery(this).scrollTop())
+            console.log('----' + self.tag.hHeight)
+            self.fixedHeader = true
+          } else {
+            self.fixedHeader = false
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  .laber-info{
+    width: 60%;
+    font-weight:700;
+    text-align: left;
+    padding-left:5px;
+  }
+  .laber-input{
+    /*border: 1px solid #b5bbc8;*/
+  }
+  #fHeader{
+    min-width: 1349px;
+    position: fixed;
+    top: 50px;
+    left: 1px;
+    z-index:12;
+    background-color: #fff;
+  }
+  #fHeader tr th:not(:first-child){
+    width: 75px;
+  }
+  #fHeader tr th:nth-child(1){
+    min-width: 193px;
+    max-width: 15%;
+  }
+  #sTable tr td:nth-child(1){
+    min-width: 193px;
+    max-width: 15%;
+  }
+  #sTable tr td:not(:first-child){
+    width: 75px;
+  }
+  #sTable tr td:nth-child(12){
+    max-width: 65px;
+  }
+  #fHeader tr th:nth-child(12){
+    max-width: 65px;
+  }
+</style>

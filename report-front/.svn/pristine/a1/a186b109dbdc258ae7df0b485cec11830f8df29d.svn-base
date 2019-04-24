@@ -1,0 +1,149 @@
+<template>
+  <div class="content-wrapper" style="min-height: 700px;margin-bottom: 50px;padding:0 15px;">
+    <Cmghre001 :orgCode="orgCode"  :farmOrg="farmOrg" v-on:getData="getData"></Cmghre001>
+    <div class="row">
+      <div >
+        <h1 style="font-size: 1.5em;text-align: center;" id="tabletitle">猪只死亡报表</h1>
+        <div style="float: right; ">
+          <select style="width:60px;height: 30px;">
+            <option>excel</option>
+            <option>pdf</option>
+          </select>
+          <button class="btn btn-primary" @click="tableToExcel('tableContent')">导出</button>
+        </div>
+      </div>
+      <div id="tableContent">
+        <h2>{{tableData01.descLoc}}</h2>
+        <table class="table table-hover table-striped" style="margin-bottom: 55px;">
+          <thead>
+          <tr v-show="device=='PC'">
+            <th>日期</th>
+            <th>类型</th>
+            <th>数量</th>
+            <th>重量</th>
+            <th>死亡原因</th>
+          </tr>
+          </thead>
+          <tbody v-if="device=='PC'">
+          <tr v-for="(p1, index) in tableData01.datas">
+            <td>{{p1.VAL01}}</td>
+            <td>{{p1.VAL02}}</td>
+            <td>{{p1.VAL03}}</td>
+            <td>{{p1.VAL04}}</td>
+            <td>{{p1.VAL05}}</td>
+          </tr>
+
+          </tbody>
+          <tbody v-else="">
+          <tr  v-for="(p1, index) in tableData01.datas">
+            <td>
+              <div class="card-views">
+                <div class="card-view">
+                  <span class="title" style="">日期</span>
+                  <span class="value">{{p1.VAL01}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">类型</span>
+                  <span class="value">{{p1.VAL02}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">数量</span>
+                  <span class="value">{{p1.VAL03}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">重量</span>
+                  <span class="value">{{p1.VAL04}}</span>
+                </div>
+                <div class="card-view">
+                  <span class="title" style="">死亡原因</span>
+                  <span class="value">{{p1.VAL05}}</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import BootstrapTable from 'bootstrap-table'
+  import Cmghre001 from '@/components/cm/ghre001'
+  import jQuery from 'jquery'
+  export default {
+    name: 'growerReport06',
+    components: {
+      BootstrapTable,
+      Cmghre001
+    },
+    props: ['orgCode', 'farmOrg', 'device'],
+    mounted () {
+      this.getData()
+    },
+    data () {
+      var startDate = new Date()
+      startDate.setDate(1)
+      return {
+        tableData01: [],
+        batch: '',
+        startDate: (startDate).toLocaleDateString(),
+        endDate: (new Date()).toLocaleDateString()
+      }
+    },
+    methods: {
+      getData (batch, beginDate, endDate) {
+        var _self = this
+        console.log(_self.startDate)
+        if (beginDate !== undefined || endDate !== undefined) {
+          _self.startDate = beginDate
+          _self.endDate = endDate
+        }
+        _self.batch = batch !== undefined ? batch : '647008-4-01-3-004'
+        jQuery.ajax({
+          url: '/grower/report/SWFN0107/query',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({'orgCode': _self.orgCode, 'farmOrg': _self.farmOrg, 'flock': batch}),
+          dataType: 'json',
+          success: function (res) {
+            _self.tableData01 = res.datas[1001]
+          },
+          fail: function (e) {
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+<style>
+  .card-views .title{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left!important;
+  }
+  .table thead, .table tr {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: rgb(0, 189, 189);
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+</style>

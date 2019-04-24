@@ -1,0 +1,375 @@
+<template>
+  <div class="row" id="pdfDom" style="padding: 55px 16px;min-height:550px;background-color: #fff;">
+    <form class="form" style="overflow: hidden">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.farm')}}: </div>
+            <input class="form-control" v-model="farmName" readonly>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">{{$t('swineReport.breedGroup')}}: </div>
+            <div class="form-control" style="width: 45%;padding: 0;">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getStartGroup"></weekse001>
+            </div>
+            <span class="form-control" style="padding: 5px 0;width: 10%;text-align: center;">{{$t('swineReport.to')}}</span>
+            <div class="form-control" style="width: 45%;padding: 0;">
+              <weekse001 style="width: 100%;" size="small" :orgCode="orgCode" :farmOrg="farmOrg" v-on:getL="getEndGroup"></weekse001>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('swineReport.startDate')}}： </div>
+            <div class="form-control" style="padding: 0;">
+              <el-input  v-model="startDate" :disabled="true"> </el-input>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">{{$t('swineReport.endDate')}}： </div>
+            <div class="form-control" style="padding: 0;">
+              <el-input  v-model="endDate" :disabled="true"> </el-input>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary" @click="openWarning">{{$t('swineReport.search')}}</button>&nbsp;
+          <a href="#" id="dlink"><button type="button" class="btn btn-primary" @click="getExcel">{{$t('swineReport.export')}} Excel</button>&nbsp;</a>
+          <button type="button" class="btn btn-primary"v-on:click="getPdf()">{{$t('swineReport.export')}} PDF</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <vue-loading v-show="loadFlag" type="spiningDubbles" color="#3c8dbc" :size="{ width: '100px', height: '100px' }"></vue-loading>
+    <div v-show="tableFlag && datas.length !== 0" style="padding: 0">
+      <table id="fHeader" class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'&& fixedHeader">
+        <tr>
+          <th>{{$t('swineReport.breedGroup')}} </th>
+          <th>{{$t('swineReport.serviceDate')}} </th>
+          <th>{{$t('swineReport.services')}} </th>
+          <th>{{$t('swineReport.returns')}}</th>
+          <th>{{$t('swineReport.negative')}}</th>
+          <th>{{$t('swineReport.abortions')}}</th>
+          <th>{{$t('swineReport.foundOpen')}}</th>
+          <th>{{$t('swineReport.death')}}</th>
+          <th>{{$t('swineReport.otherRemovals')}}</th>
+          <th>{{$t('swineReport.notPregnant')}}</th>
+          <th>{{$t('swineReport.pregOrFarrowed')}}</th>
+          <th>{{$t('swineReport.pregFarrowed')}}</th>
+          <th>{{$t('swineReport.farrowingDate')}} </th>
+        </tr>
+        </thead>
+      </table>
+      <div style="padding: 4px;">
+        <h4 style="text-align: center">{{htmlTitle}}</h4>
+        <el-tag size="small "><span >{{$t('swineReport.farm')}}:</span> {{(language === 'en')===true? tag.farm_name_eng : tag.farm_name_loc}}</el-tag>
+        <el-tag size="small "><span >{{$t('swineReport.breedGroup')}}:</span> {{tag.startGroup}}-{{tag.endGroup}}</el-tag>
+      </div>
+      <table v-show="device=='PC'" id="sTable" class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr>
+          <th>{{$t('swineReport.breedGroup')}} </th>
+          <th>{{$t('swineReport.serviceDate')}} </th>
+          <th>{{$t('swineReport.services')}} </th>
+          <th>{{$t('swineReport.returns')}}</th>
+          <th>{{$t('swineReport.negative')}}</th>
+          <th>{{$t('swineReport.abortions')}}</th>
+          <th>{{$t('swineReport.foundOpen')}}</th>
+          <th>{{$t('swineReport.death')}}</th>
+          <th>{{$t('swineReport.otherRemovals')}}</th>
+          <th>{{$t('swineReport.notPregnant')}}</th>
+          <th>{{$t('swineReport.pregOrFarrowed')}}</th>
+          <th>{{$t('swineReport.pregFarrowed')}}</th>
+          <th>{{$t('swineReport.farrowingDate')}} </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="data in datas">
+          <td>{{data.mate_group}}</td>
+          <td>{{data.mate_date}}</td>
+          <td>{{data.mate_number}}</td>
+          <td>{{data.count_abort_type3}}</td>
+          <td>{{data.count_abort_type2}}</td>
+          <td>{{data.count_abort_type1}}</td>
+          <td>{{data.column_avg_03}}</td>
+          <td>{{data.count_dead_type}}</td>
+          <td>{{data.count_cull_type}}</td>
+          <td>{{data.non_farrow_number}}</td>
+          <td>{{data.mate_farrow_number}}</td>
+          <td>{{data.mate_farrow_rate}}%</td>
+          <td>{{data.farrow_date}}</td>
+        </tr>
+        </tbody>
+      </table>
+      <table v-show="device=='M'" class="table table-bordered table-hover table-striped">
+        <tbody>
+        <tr v-for="data in datas">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.breedGroup')}} </span>
+                <span class="value"> {{data.mate_group}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.serviceDate')}} </span>
+                <span class="value"> {{data.mate_date}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> {{$t('swineReport.services')}} </span>
+                <span class="value"> {{data.mate_number}} </span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.returns')}}</span>
+                <span class="value">{{data.count_abort_type3}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.negative')}}</span>
+                <span class="value">{{data.count_abort_type2}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.abortions')}}</span>
+                <span class="value">{{data.count_abort_type1}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">Found<br>open</span>
+                <span class="value">{{data.column_avg_03}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.death')}}</span>
+                <span class="value">{{data.count_dead_type}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.otherRemovals')}}</span>
+                <span class="value">{{data.count_cull_type}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.notPregnant')}}</span>
+                <span class="value">{{data.non_farrow_number}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.pregOrFarrowed')}}</span>
+                <span class="value">{{data.mate_farrow_number}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.pregFarrowed')}}</span>
+                <span class="value">{{data.mate_farrow_rate}}%</span>
+              </div>
+              <div class="card-view">
+                <span class="title">{{$t('swineReport.farrowingDate')}}</span>
+                <span class="value">{{data.farrow_date}}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <p v-show="tableFlag && datas.length == 0" style="text-align: center;">{{$t('swineReport.noData')}}</p>
+  </div>
+</template>
+
+<script>
+  import Weekse001 from '@/components/cm/weekse001'
+  import jQuery from 'jquery'
+  import vueLoading from 'vue-loading-template'
+  export default {
+    props: ['orgCode', 'farmOrg', 'device', 'language'],
+    name: 'swine-Report05',
+    components: {
+      Weekse001,
+      vueLoading
+    },
+    data () {
+      return {
+        fixedHeader: false,
+        up: true,
+        farmName: this.orgCode + '#' + this.farmOrg,
+        loadFlag: false,
+        tableFlag: false,
+        tag: {},
+        datas: [],
+        startGroup: '',
+        endGroup: '',
+        groupList: '',
+        startDate: '',
+        endDate: '',
+        htmlTitle: this.$t('message.titleSwineReport05')
+      }
+    },
+    mounted () {
+      this.headerMonitor()
+    },
+    methods: {
+      getExcel () {
+        var excelTitle = '<h2 style="text-align: center">' + this.htmlTitle + '</h2>'
+        excelTitle += '<span style="text-align: left">' + this.$t('swineReport.farm') + ':' + this.tag.farm_org + '</span>'
+        excelTitle += '<span style="text-align: left">&nbsp;&nbsp;' + this.language === 'en' ? this.tag.farm_name_eng : this.tag.farm_name_loc + '</span>'
+        excelTitle += '<span>&nbsp;&nbsp;' + this.$t('swineReport.breedGroup') + ':' + this.tag.startGroup + '-' + this.tag.endGroup + '</span>'
+        this.tableToExcel2(excelTitle, 'sTable')
+      },
+      down () {
+        this.up = !this.up
+      },
+      getStartGroup (d) {
+        this.startGroup = d.mateGroup
+        this.startDate = d.weekStartDate
+      },
+      getEndGroup (d) {
+        this.endGroup = d.mateGroup
+        this.endDate = d.weekEndDate
+      },
+      openWarning () {
+        var _self = this
+        if (_self.startDate > _self.endDate) {
+          _self.$notify.error({
+            title: '警告',
+            message: '选择的查询区段有误,请核实！',
+            type: 'warning',
+            position: 'top-right'
+          })
+        } else if (_self.startDate === '' || _self.endDate === '') {
+          _self.$notify.error({
+            title: '警告',
+            message: '配种组不可以为空！',
+            type: 'warning',
+            position: 'top-right'
+          })
+        } else {
+          _self.doSearch()
+        }
+      },
+      doSearch () {
+        var _self = this
+        _self.datas = ''
+        _self.tableFlag = false
+        _self.loadFlag = true
+        _self.tag.startGroup = _self.startGroup
+        _self.tag.endGroup = _self.endGroup
+        jQuery.ajax({
+          url: '/standard/' + _self.orgCode + '/' + _self.farmOrg + '/report5',
+          type: 'POST',
+          //  contentType: 'application/json',
+          data: {'startDate': _self.startDate, 'endDate': _self.endDate},
+          dataType: 'json',
+          success: function (res) {
+            _self.datas = res
+            if (res.length > 0) {
+              _self.tag.farm_name_loc = res[0]['farm_name_loc']
+              _self.tag.farm_org = res[0]['farm_org']
+              _self.tag.farm_name_eng = res[0]['farm_name_eng']
+            }
+            _self.loadFlag = false
+            _self.tableFlag = true
+            _self.$nextTick(function () {
+              _self.tag.hHeight = jQuery('#sTable').offset().top
+            })
+          },
+          fail: function (e) {
+//            this.tableFlag = false
+            alert('请求失败')
+            console.log('查询失败')
+          }
+        })
+      },
+      headerMonitor () {
+        var self = this
+//        var hHeight = jQuery('#sTable').offset().top
+        jQuery(document).scroll(function () {
+          // 当滚动条达到偏移值的时候，出现固定表头
+          if (jQuery(this).scrollTop() >= self.tag.hHeight) {
+//            console.log('++++' + jQuery(this).scrollTop())
+//            console.log('----' + self.tag.hHeight)
+            self.fixedHeader = true
+          } else {
+            self.fixedHeader = false
+          }
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  /* Alternating background colors */
+  /*.table tr:nth-child(even) {*/
+    /*background: #eee*/
+  /*}*/
+  /*.table tr:nth-child(odd) {*/
+    /*background: #FFF*/
+  /*}*/
+  #fHeader{
+    position: fixed;
+    top:50px;
+    left: 0;
+    z-index:9;
+    background-color: #fff;
+  }
+  /*#sTable{*/
+    /*min-width: 780px;*/
+  /*}*/
+  /*#fHeader tr th, #sTable tr td{*/
+    /*width: 6.27%;*/
+    /*min-width: 53px;*/
+  /*}*/
+  #fHeader tr th:first-child,#sTable tr td:first-child{
+    width: 6%;
+    min-width: 56px;
+  }
+  #fHeader tr th:nth-child(2),#fHeader tr th:last-child,#sTable tr td:nth-child(2),#sTable tr td:last-child{
+    width:12%;
+    min-width: 105px;
+  }
+  #fHeader tr th:nth-child(12){
+    width: 6%;
+    min-width: 74px;
+  }
+  #sTable tr td:nth-child(12){
+    width: 6%;
+    min-width: 70px;
+  }
+  #fHeader tr th:nth-child(3),#fHeader tr th:nth-child(4),#fHeader tr th:nth-child(5),#fHeader tr th:nth-child(6), #fHeader tr th:nth-child(7),#fHeader tr th:nth-child(8),#fHeader tr th:nth-child(9),#fHeader tr th:nth-child(10),#fHeader tr th:nth-child(11){
+    width: 7%;
+    min-width: 58px;
+  }
+  #sTable tr td:nth-child(3),#sTable tr td:nth-child(4),#sTable tr td:nth-child(5),#sTable tr td:nth-child(6), #sTable tr td:nth-child(7),#sTable tr td:nth-child(8),#sTable tr td:nth-child(9),#sTable tr td:nth-child(10),#sTable tr td:nth-child(11){
+    width: 7%;
+    min-width: 58px;
+  }
+  div.form-control{
+    height:auto;
+  }
+</style>

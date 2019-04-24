@@ -1,0 +1,359 @@
+<template>
+  <div class="row" style="padding-top: 55px;background-color:#fff;">
+    <form class="form">
+      <div v-show="up">
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px">
+            <div class="input-group-addon">管理农场: </div>
+            <select class="form-control">
+              <option>08-0-0</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-6">
+          <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;">
+            <div class="input-group-addon">品种: </div>
+            <div class="dropdown form-control" style="padding:0;z-index: 9;">
+              <div class="dropdown-toggle col-xs-12 col-sm-12" id="breed" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="true" style="height: 32px;line-height: 32px;cursor: pointer;">
+                <span>请选择品种</span>
+                <span class="caret pull-right" style="margin-top: 15px"></span>
+              </div>
+              <ul class="dropdown-menu col-xs-12 col-sm-12" aria-labelledby="breed" style="padding: 5px 15px;border:1px solid #5DA0C7;border-radius:0;max-height: 150px;overflow-y: scroll">
+                <li class="breedLi" @click="all"><input type="checkbox"> <span>全选</span></li>
+                <template v-for="b in breeds">
+                  <li class="breedLi"><input type="checkbox" :checked="selectBreed"> <span>{{b}}</span></li>
+                </template>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-xs-12 col-sm-12" style="padding: 0 30px;">
+          <div class="">
+            <ul class="nav nav-tabs">
+              <li style="text-align: center;" class="col-sm-2 active"><a href="#a" data-toggle="tab" contenteditable="true">明细1</a></li>
+              <li style="text-align: center;" class="col-sm-2 "><a href="#b" data-toggle="tab" contenteditable="true">明细2</a></li>
+              <li style="text-align: center;" class="col-sm-2 "><a href="#c" data-toggle="tab" contenteditable="true">明细3</a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane fade in active" id="a" contenteditable="true" style="overflow: hidden;outline: none;border: none">
+                <div style="margin: 5px 0;" class="form-group col-xs-12 col-sm-6">
+                    <div class="input-group">
+                      <div class="input-group-addon">配种组: </div>
+                      <select class="form-control" style="width: 45%">
+                        <option>--请选择--</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                      <span class="form-control" style="padding: 5px 0;width: 10%;text-align: center">到</span>
+                      <select class="form-control" style="width: 45%">
+                        <option>--请选择--</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </div>
+                  </div>
+                <div style="margin: 5px 0;" class="form-group col-xs-12 col-sm-6">
+                  <div class="input-group" >
+                    <div class="input-group-addon">怀孕天数: </div>
+                    <input class="form-control" type="number"/>
+                    <div class="input-group-addon">天</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab-pane fade" id="b" contenteditable="true" style="cursor: default;overflow: hidden;outline: none;border: none">
+                <div style="margin: 5px 0;" class="form-group col-xs-12 col-sm-6">
+                  <div class="input-group">
+                    <div class="input-group-addon">胎次: </div>
+                    <div class="form-control col-xs-12 col-sm-12">
+                      <div style="display:inline-flex;padding: 0 ;">
+                        <input type="radio" name="birth" checked> <span>全部</span>
+                      </div>
+                      <div style="display:inline-flex;padding: 0;">
+                        <input type="radio" name="birth" style="padding-right: 40px;"> <span>第一胎</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="margin: 5px 0;" class="form-group col-xs-12 col-sm-6">
+                  <div class="input-group">
+                    <div class="input-group-addon">状态: </div>
+                    <input class="form-control" type="number"/>
+                    <div class="input-group-addon">天</div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="c" contenteditable="true" style="overflow: hidden;outline: none;border: none">
+                <div style="" class="form-group col-xs-12 col-sm-12">
+                  <div style="margin: 5px 0;" class="input-group col-xs-12 col-sm-12">
+                    <div class="input-group-addon">天数范围: </div>
+                    <div class="form-control" style="height: auto">
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">1:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">2:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">3:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">4:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">5:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">6:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">7:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">8:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">9:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">10:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">11:</label><input type="text" class="laber-input"></div>
+                      <div class="col-xs-4 col-sm-2 col-md-1" style="padding: 0"><label class="laber-info">12:</label><input type="text" class="laber-input"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="form-group col-xs-12 col-sm-12">
+        <div class="input-group col-xs-12 col-sm-12" style="padding: 0 15px;text-align: center">
+          <button type="button" class="btn btn-primary">查询</button>&nbsp;
+          <button type="button" class="btn btn-primary">导出excel</button>&nbsp;
+          <span class="glyphicon glyphicon-chevron-up btn btn-default" title='折叠搜索栏' v-show="up" @click="down"></span>
+          <span class="glyphicon glyphicon-chevron-down btn btn-default" title="显示搜索栏" v-show="!up" @click="down"></span>
+        </div>
+      </div>
+    </form>
+    <div style="padding: 0 25px;">
+      <table class="table table-bordered table-hover table-striped">
+        <thead v-show="device=='PC'">
+        <tr>
+          <th rowspan="3">配种组 </th>
+          <th rowspan="3">配种天数</th>
+          <th rowspan="3">母猪 </th>
+          <th colspan="18" style="text-align: center;">预测怀孕母猪周报</th>
+          <th rowspan="3">分娩率</th>
+          <th rowspan="3">调整分娩率</th>
+          <th rowspan="3">未分娩</th>
+          <th rowspan="3">预计分娩率</th>
+          <th rowspan="3">预计分娩日期</th>
+        </tr>
+        <tr>
+          <th>0</th>
+          <th>8</th>
+          <th>15</th>
+          <th>22</th>
+          <th>29</th>
+          <th>36</th>
+          <th>0</th>
+          <th>8</th>
+          <th>15</th>
+          <th>22</th>
+          <th>29</th>
+          <th>36</th>
+          <th>0</th>
+          <th>8</th>
+          <th>15</th>
+          <th>22</th>
+          <th>29</th>
+          <th>36</th>
+        </tr>
+        <tr>
+          <th>0</th>
+          <th>8</th>
+          <th>15</th>
+          <th>22</th>
+          <th>29</th>
+          <th>36</th>
+          <th>0</th>
+          <th>8</th>
+          <th>15</th>
+          <th>22</th>
+          <th>29</th>
+          <th>36</th>
+          <th>0</th>
+          <th>8</th>
+          <th>15</th>
+          <th>22</th>
+          <th>29</th>
+          <th>36</th>
+        </tr>
+        </thead>
+        <tbody v-show="device=='PC'">
+        <tr>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+          <td>111</td>
+        </tr>
+        </tbody>
+        <tbody v-show="device=='M'">
+        <tr>
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title">配种组</span>
+                <span class="value"> a </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 配种天数 </span>
+                <span class="value"> b </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 母猪 </span>
+                <span class="value"> c </span>
+              </div>
+              <div class="card-view">
+                <span class="title"> 汇总 </span>
+                <span class="value">d</span>
+              </div>
+              <div class="card-view">
+                <span class="title">预测怀孕母猪周报表</span>
+                <span class="value">0 - 7</span>
+                <span class="value">值</span>
+              </div>
+              <div class="card-view">
+                <span class="title"> </span>
+                <span class="value">8 - 36</span>
+                <span class="value">值2</span>
+              </div>
+              <div class="card-view">
+                <span class="title"> </span>
+                <span class="value">8 - 36</span>
+                <span class="value">值2</span>
+              </div>
+              <div class="card-view">
+                <span class="title">分娩 </span>
+                <span class="value">值2</span>
+              </div>
+              <div class="card-view">
+                <span class="title">分娩率 </span>
+                <span class="value">值2</span>
+              </div>
+              <div class="card-view">
+                <span class="title">调整分娩率 </span>
+                <span class="value">值2</span>
+              </div>
+              <div class="card-view">
+                <span class="title">未分娩 </span>
+                <span class="value">值2</span>
+              </div>
+              <div class="card-view">
+                <span class="title">预计分娩率 </span>
+                <span class="value">值2</span>
+              </div>
+              <div class="card-view">
+                <span class="title">预计分娩日期 </span>
+                <span class="value">值2</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+  import Dtre001 from '@/components/cm/dtre001'
+  import Dtre002 from '@/components/cm/dtre002'
+  export default {
+    props: ['device'],
+    name: 'swine-Report04',
+    components: {
+      Dtre001,
+      Dtre002
+    },
+    data () {
+      return {
+        up: true,
+        breeds: ['长白', '小猪1品', '2品种', '长白', '小猪1品', '2品种'],
+        selectBreed: false
+      }
+    },
+    methods: {
+      down () {
+        this.up = !this.up
+      },
+      all () {
+        this.selectBreed = !this.selectBreed
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .input-group-addon{
+    background-color: #eff3ff;
+  }
+  .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
+    background-color: orange;
+    cursor: pointer !important;
+  }
+  .nav-tabs a{
+    cursor: pointer !important;
+  }
+  .card-views .title, .card-views .value{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left;
+    padding: 3px 0;
+  }
+  .card-views .value{
+    font-weight:400;
+  }
+  .table thead, .table tr {
+    border-top:1px solid rgb(0, 189, 189)
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;
+  }
+  .laber-info{
+    width: 40%;
+    font-weight:700;
+    text-align: center;
+  }
+  .laber-input{
+    border: 1px solid #b5bbc8;
+    width: 60%;
+  }
+  .breedLi{
+    padding: 5px 0;
+  }
+  li.breedLi:hover,li.breedLi:active{
+    background-color: #efefef;
+  }
+</style>

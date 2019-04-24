@@ -1,0 +1,66 @@
+<template>
+  <!-- 日期范围选择组件 -->
+  <div >
+    <!--
+    <div class="input-group col-xs-10 col-sm-4" style="float:left; padding-right:5px">
+      <div class="input-group-addon">
+        <i class="fa fa-calendar"></i>
+      </div>
+      <input type="text" class="form-control pull-left date-range-begin" style="width:100%" readonly="readonly" placeholder="开始日期" v-model="beginDate">
+    </div>
+    <div class="input-group col-xs-10 col-sm-4" style="float:left; padding-right:5px">
+        <div class="input-group-addon">
+          <i class="fa fa-calendar"></i>
+        </div>
+        <input type="text" class="form-control pull-left date-range-end" style="width:100%" readonly="readonly" placeholder="结束日期" v-model="endDate">
+    </div>
+    -->
+    <dtre002 :date="beginDate" class="col-xs-10 col-sm-4" style="float:left; padding-right:5px" v-on:changeDate="doChangeStart"/>
+    <dtre002 :date="endDate" class="col-xs-10 col-sm-4" style="float:left; padding-right:5px" v-on:changeDate="doChangeEnd"/>
+    <div class="col-xs-2">
+      <button class="btn btn-default" @click="doSearch"><i class="fa fa-search"></i></button>
+    </div>
+  </div>
+</template>
+
+<script>
+// import jQuery from 'jquery'
+import dtre002 from '@/components/cm/dtre002'
+
+export default {
+  props: ['begin', 'end', 'autoSearch'],
+  components: {
+    dtre002
+  },
+  data () {
+    var beginDate = new Date()
+    beginDate.setDate(1) // 本月的第一天
+    return {
+      'beginDate': beginDate,
+      'endDate': this.end || new Date()
+    }
+  },
+  mounted () {
+    console.log('mounted')
+    if (this.autoSearch === true) {
+      this.doSearch()
+    }
+  },
+  methods: {
+    doChangeStart (d) {
+      console.log('changeStart to ' + d)
+      this.beginDate = d
+      this.$emit('update:begin', d)
+    },
+    doChangeEnd (d) {
+      console.log('changeEnd to ' + d)
+      this.endDate = d
+      this.$emit('update:end', d)
+    },
+    doSearch () {
+      console.log(this.beginDate + ' - ' + this.endDate)
+      this.$emit('doSearch', this.beginDate, this.endDate)
+    }
+  }
+}
+</script>

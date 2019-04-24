@@ -1,0 +1,156 @@
+﻿<template>
+  <div class="content-wrapper" style="padding:0 15px;">
+    <Cmghre001></Cmghre001>
+    <div>
+      <div style="position: relative;height: 50px">
+        <h1 style="font-size: 1.5em;text-align: center;">收支报表</h1>
+        <button class="btn btn-primary" style="position: absolute; right: 0;top: 0;">导出</button>
+      </div>
+      <table class="table table-hover table-striped" style="margin-bottom: 50px;">
+        <thead>
+        <tr v-show="device=='PC'">
+          <th>FeedCode</th>
+          <th>FeedName</th>
+          <th>InvoiceDate</th>
+          <th>TargetDate</th>
+          <th>OrderNum</th>
+        </tr>
+        </thead>
+        <tbody v-if="device=='PC'">
+        <tr v-for="(p1, index) in tableData01">
+          <td>{{p1.feedCode}}</td>
+          <td>{{p1.feedName}}</td>
+          <td>{{p1.invoiceDate}}</td>
+          <td>{{p1.targetDate}}</td>
+          <td>{{p1.orderNum}}</td>
+        </tr>
+
+        </tbody>
+        <tbody v-else=""  class="mobileBorder">
+        <tr  v-for="(p1, index) in tableData01">
+          <td>
+            <div class="card-views">
+              <div class="card-view">
+                <span class="title" style="">feedCode</span>
+                <span class="value">{{p1.feedCode}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">FeedName</span>
+                <span class="value">{{p1.feedname}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">invoiceDate</span>
+                <span class="value">{{p1.invoiceDate}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">targetDate</span>
+                <span class="value">{{p1.targetDate}}</span>
+              </div>
+              <div class="card-view">
+                <span class="title" style="">orderNum</span>
+                <span class="value">{{p1.orderNum}}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</template>
+
+<script>
+  import BootstrapTable from 'bootstrap-table'
+  import Cmghre001 from '@/components/cm/ghre001'
+  import jQuery from 'jquery'
+  export default {
+    name: 'growerReport01',
+    components: {
+      BootstrapTable,
+      Cmghre001
+    },
+    mounted () {
+//    判断设备给不同的样式
+      this.browserRedirect()
+      this.getData()
+    },
+    data () {
+      return {
+        device: 'M',
+        tableData01: []
+      }
+    },
+    methods: {
+//    用来判断终端，是pc 或者 移动端
+      browserRedirect () {
+        var sUserAgent = navigator.userAgent.toLowerCase()
+        var bIsIpad = sUserAgent.match(/ipad/i) === 'ipad'
+        var bIsIphoneOs = sUserAgent.match(/iphone os/i) === 'iphone os'
+        var bIsMidp = sUserAgent.match(/midp/i) === 'midp'
+        var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) === 'rv:1.2.3.4'
+        var bIsUc = sUserAgent.match(/ucweb/i) === 'ucweb'
+        var bIsAndroid = sUserAgent.match(/android/i) === 'android'
+        var bIsCE = sUserAgent.match(/windows ce/i) === 'windows ce'
+        var bIsWM = sUserAgent.match(/windows mobile/i) === 'windows mobile'
+        //   console.log("您的浏览设备为：") if phone true,if pc false
+        if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+          console.log('m')
+          this.device = 'M'
+        } else {
+          console.log('pc')
+          this.device = 'PC'
+        }
+      },
+//    获取表格数据
+      getData () {
+        var _self = this
+        jQuery.ajax({
+          url: '/grower/grower2Test',
+          type: 'POST',
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function (res) {
+            _self.tableData01 = res
+            console.log(11111111)
+            console.log(res.length)
+            // window.location.reload()
+          },
+          fail: function (e) {
+            console.log('查询失败')
+          }
+        })
+      }
+    }
+  }
+</script>
+<style>
+  .card-views .title{
+    font-weight: 700;
+    display: inline-block;
+    min-width: 30%;
+    text-align: left!important;
+  }
+  .table thead, .table tr {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: rgb(0, 189, 189);
+  }
+
+  /* Padding and font style */
+  .table td, .table th {
+    padding: 5px 10px;
+    color: #333;
+  }
+  .table th{
+    color:#3c8dbc;;
+  }
+  /* Alternating background colors */
+  .table tr:nth-child(even) {
+    background: #eee
+  }
+  .table tr:nth-child(odd) {
+    background: #FFF
+  }
+</style>

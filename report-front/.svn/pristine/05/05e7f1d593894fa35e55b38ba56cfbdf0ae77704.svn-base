@@ -1,0 +1,91 @@
+<template>
+  <div id="app">
+    <v-header />
+    <router-view :device="device" :language="language" />
+    <v-footer />
+  </div>
+</template>
+
+<script>
+  import VHeader from '@/components/layout/VHeader'
+  import VFooter from '@/components/layout/VFooter'
+  import {getCookie} from '@/components/utils/cookie'
+
+  export default {
+    name: 'app',
+    components: {
+      VHeader,
+      VFooter
+    },
+    data () {
+      return {
+        device: '',
+        language: ''
+      }
+    },
+    mounted () {
+      this.browserRedirect()
+      this.getLang()
+    },
+    methods: {
+      getLang () {
+        var language = getCookie('lang')
+        console.log('language = ' + language)
+        if (!language || language === '') {
+          language = 'zh_CN'
+        }
+        this.language = language
+      },
+//      判断设备，给不同样式
+      browserRedirect () {
+        var sUserAgent = navigator.userAgent.toLowerCase()
+        var bIsIpad = sUserAgent.match(/ipad/i)
+        var bIsIphoneOs = sUserAgent.match(/iphone os/i)
+        var bIsMidp = sUserAgent.match(/midp/i)
+        var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i)
+        var bIsUc = sUserAgent.match(/ucweb/i)
+        var bIsAndroid = sUserAgent.match(/android/i)
+        var bIsCE = sUserAgent.match(/windows ce/i)
+        var bIsWM = sUserAgent.match(/windows mobile/i)
+        var bro = bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM
+        if (!bro) {
+          console.log('pc')
+          this.device = 'PC'
+        } else {
+          console.log('m端----，')
+          this.device = 'M'
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /*text-align: center;*/
+    color: #2c3e50;
+  }
+  /* 固定顶部导航栏 */
+.navbar {
+  margin-left: 0px!important
+}
+.content-wrapper {
+  clear: both;
+  padding-top: 50px!important;
+  margin-left: 0px!important
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: all .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
+  opacity: 0
+}
+.el-input__inner{
+  height: 32px;
+  border:none;
+}
+</style>

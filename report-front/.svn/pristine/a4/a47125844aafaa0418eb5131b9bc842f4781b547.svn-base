@@ -1,0 +1,57 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+// import HelloWorld from '@/components/HelloWorld'
+import GrowerReport01 from '@/components/grower/GrowerReport01'
+import GrowerReport02 from '@/components/grower/GrowerReport02'
+import GrowerReport04 from '@/components/grower/GrowerReport04'
+import GrowerReport06 from '@/components/grower/GrowerReport06'
+import Cmsmst001 from '@/components/cm/smst001'
+import Test01 from '@/components/test/test01'
+import {getCookie} from '@/components/utils/cookie'
+Vue.use(Router)
+
+var orgCode = getCookie('orgCode') || 'demo'
+var farmOrg = getCookie('farmOrg') || 'demo'
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      redirect: '/cmsmst001/' + orgCode + '/' + farmOrg
+    },
+    {
+      path: '/cmsmst001/:orgCode/:farmOrg',
+      name: 'Cmsmst001',
+      component: Cmsmst001,
+      props: true,
+      meta: {
+        backToMain: true
+      }
+    },
+    {
+      path: '/growerReport01/:orgCode/:farmOrg',
+      name: 'GrowerReport01',
+      component: GrowerReport01
+    },
+    {
+      path: '/growerReport02/:orgCode/:farmOrg',
+      name: 'GrowerReport02',
+      component: GrowerReport02
+    },
+    {
+      path: '/growerReport04/:orgCode/:farmOrg',
+      name: 'GrowerReport04',
+      component: GrowerReport04
+    },
+    {
+      path: '/growerReport06/:orgCode/:farmOrg',
+      name: 'GrowerReport06',
+      component: GrowerReport06
+    },
+    {
+      path: '/test01',
+      name: 'Test01',
+      component: Test01
+    }
+  ]
+})

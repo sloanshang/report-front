@@ -1,0 +1,96 @@
+
+var messages = {
+  en: {
+    grower: {
+      closeoutReport: {
+        Summary: 'Summary',
+        Producer: 'Producer',
+        Barn: 'Barn',
+        Room: 'Room',
+        StartDate: 'Start Date',
+        CloseDate: 'Close Date',
+        FirstPigSold: '1st Pig Sold',
+        FirstMrktSale: '1st Mrkt Sale',
+        DaysFirstMrkt: 'Days 1st Mrkt',
+        LastPigsSold: 'Last Pigs Sold',
+        MarketingContractType: 'Marketing  Contract Type',
+        CurrentInventory: 'Current Inventory',
+        SummaryPigsIN: 'Summary Pigs IN',
+        Item: 'Item',
+        PigSource: 'Pig Source',
+        Number: 'Number',
+        percentage: '%',
+        Totalwt: 'Total wt',
+        Avgwt: 'Avg wt',
+        AvgAgeIn: 'Avg Age In',
+        SummaryPigsOUT: 'Summary Pigs OUT',
+        PigOut: 'Item',
+        PigDestination: 'Pig Destination',
+        Loss: 'Loss',
+        Performance: 'Performance',
+        DeadWeight: 'Dead Weight',
+        NoDeadWeight: 'w/o Dead Weight',
+        Performance2: 'Performance2',
+        Value: 'Value',
+        FeedCostSummary: 'Feed Cost Summary',
+        FeedIngredient: 'Feed Ingredient',
+        PLSummary: 'P & L Summary',
+        Income: 'Income',
+        Money: 'Money',
+        headSold: '/ head sold',
+        headProduced: '/ head produced',
+        LbSold: '/ Lb sold',
+        LbProduced: ' / Lb produced',
+        CwtSold: '/ Cwt sold'
+      }
+    }
+  },
+  zh_CN: {
+    grower: {
+      closeoutReport: {
+        Summary: '批次概述',
+        Producer: '猪场名称',
+        Barn: '栋号',
+        Room: '舍号',
+        StartDate: '开始进猪日期',
+        CloseDate: '全部猪只完成出库日期',
+        FirstPigSold: '第一次售猪时间',
+        FirstMrktSale: '第一次售商品猪时间',
+        DaysFirstMrkt: '从进场到第一次售商品猪天数',
+        LastPigsSold: '最后一次售猪时间',
+        MarketingContractType: '合同类型',
+        CurrentInventory: '当前库存',
+        SummaryPigsIN: '进猪综述',
+        Item: '项目',
+        PigSource: '猪只来源',
+        Number: '数量',
+        percentage: '占比',
+        Totalwt: '总重',
+        Avgwt: '均重',
+        AvgAgeIn: '平均进场日龄',
+        SummaryPigsOUT: '出猪综述',
+        PigOut: '出猪方式',
+        PigDestination: '出猪目的地',
+        Loss: '总损失',
+        Performance: '性能',
+        DeadWeight: '包括死猪',
+        NoDeadWeight: '不包括死猪',
+        Performance2: '性能2',
+        Value: '值',
+        FeedCostSummary: '饲料成本',
+        FeedIngredient: '饲料组成',
+        PLSummary: 'P & L 总结',
+        Income: '收入',
+        Money: '总金额',
+        headSold: '人民币/每头售猪',
+        headProduced: '人民币/每头产出猪',
+        LbSold: '人民币/每公斤售猪',
+        LbProduced: '人民币/每公斤产猪',
+        CwtSold: '人民币/每百公斤售猪'
+
+      }
+    }
+  }
+}
+
+export default messages
